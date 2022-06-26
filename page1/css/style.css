@@ -1029,7 +1029,7 @@ ul{
 /* Ends Animation */
 
 .landing,.articles, .gallery, .features, .testimonials, .team, .services, .our-skills{
-    display: none;
+    
 }
 
 .events{
