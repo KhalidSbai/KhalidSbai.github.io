@@ -21,7 +21,6 @@
     align-items: center;
     flex-direction: column;
     height: 70vh;
-    margin-bottom: 400px;
 }
 .one h1{
     font-size: 36px;
@@ -37,7 +36,7 @@
 .image{
     width: 80%;
     position: absolute;
-    top: calc(100% - 120px);
+    top: calc(100% - 350px);
     left: 50%;
     transform: translateX(-50%);
 }
