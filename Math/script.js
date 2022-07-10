@@ -1,15 +1,17 @@
 let container = document.querySelector(".container");
+let min = document.getElementById("min");
+let max = document.getElementById("max");
+let form = document.querySelector("form");
 
-// let num1 = document.querySelector(".num1");
-// let num2 = document.querySelector(".num2");
-// let result = document.querySelector(".result");
-let MaxNumNonInclut = 100;
-let MinNum = 1;
-let ReturnNumber = () =>
-  Math.floor(Math.random() * (MaxNumNonInclut - MinNum) + MinNum);
+//fonction qui retourne un nombre aleatoire.
+function ReturnNumber(minNum, maxNumExclut) {
+  let min = parseInt(minNum);
+  let max = parseInt(maxNumExclut);
+  return Math.floor(Math.random() * (max - min) + min);
+}
 
-for (let i = 0; i < 9; i++) {
-  // create element 'card' and chidren
+//fonction qui cree un block 'card'
+function createCard() {
   let card = document.createElement("div");
   card.classList.add("card");
   let operation = document.createElement("div");
@@ -23,8 +25,10 @@ for (let i = 0; i < 9; i++) {
   let result = document.createElement("div");
   result.classList.add("result");
 
-  num1.textContent = ReturnNumber();
-  num2.textContent = ReturnNumber();
+  num1.textContent = ReturnNumber(min.value, max.value);
+  num2.textContent = ReturnNumber(min.value, max.value);
+  console.log(num1.textContent, num2.textContent);
+
   sign.textContent = "+";
   result.textContent = eval(
     parseInt(num1.textContent) + parseInt(num2.textContent)
@@ -37,3 +41,12 @@ for (let i = 0; i < 9; i++) {
   card.appendChild(result);
   container.appendChild(card);
 }
+
+//declancher aprés la validation du forumlaire
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  container.textContent = "";
+  for (let i = 0; i < 9; i++) {
+    createCard();
+  }
+});
