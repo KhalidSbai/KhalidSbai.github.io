@@ -1,0 +1,38 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container{
+    padding: 0 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px 100px;
+    flex-wrap: wrap;
+}
+.card{
+    position: relative;
+    font-size: 6rem;
+    width: 150px;
+    border: 1px solid transparent;
+    text-align: right;
+    padding: 10px;
+}
+.operation{
+    position: relative;
+    border-bottom: 2px solid black;
+}
+.sign{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%,-50%);
+    font-size: 4rem ;
+}
+.result{
+    color: white;
+}
+.test{
+    display: none;
+}
