@@ -3,11 +3,38 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* Formulaire et titre */
 .form{
     padding: 20px;
-    margin: 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 35px;
+}
+@media (max-width : 890px){
+    .form{
+        justify-content: center;
+    }
+    .form .input{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: center;
+    }
+}
+.form form{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.form form select{
+    width: 65px;
+}
+.form form input{
+    width: 100%;
 }
 .form input[type="number"]{
     width: 60px;
@@ -16,24 +43,52 @@
     outline: none;
     border-bottom: 1px solid #777;
 }
-.form input[type="submit"]{
+.form button[type="submit"]{
+    position: relative;
     width: 60px;
     padding: 6px 8px;
     margin-left: 10px;
     cursor: pointer;
+    z-index: 1;
+    transition: 0.55s;
 }
+.form button[type="submit"]::after{
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 0%;
+    background-color: #30475E;
+    left: 0;
+    bottom: 0;
+    z-index: -1;    
+    transition: 0.25s;
+}
+.form button[type="submit"]:hover{
+    border-color: #F5F5F5;
+    color: #F5F5F5;
+    font-weight: 500;
+    transform: scale(1.1);
+    
+
+}
+.form button[type="submit"]:hover::after{
+    width: 100%;
+
+}
+
+/* Container des operations */
 .container{
-    padding: 0 30px;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-content: space-around;
     gap: 15px 100px;
     flex-wrap: wrap;
+
 }
 .card{
     position: relative;
     font-size: 6rem;
-    width: 150px;
+    width: 180px;
     border: 1px solid transparent;
     text-align: right;
     padding: 10px;
@@ -42,6 +97,7 @@
     position: relative;
     border-bottom: 2px solid black;
 }
+
 .sign{
     position: absolute;
     top: 50%;
@@ -61,4 +117,14 @@
     .form{
         display: none;
     }
+    .container{
+        height: 100vh;
+    }
+    .container::before{
+        content: "Exercices Math CP - K.S";
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+    }
 }
+

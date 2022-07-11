@@ -1,17 +1,19 @@
-let container = document.querySelector(".container");
-let min = document.getElementById("min");
-let max = document.getElementById("max");
-let form = document.querySelector("form");
+const container = document.querySelector(".container");
+const min = document.getElementById("min");
+const max = document.getElementById("max");
+const form = document.querySelector("form");
+const sb = document.querySelector("#operation");
 
 //fonction qui retourne un nombre aleatoire.
 function ReturnNumber(minNum, maxNumExclut) {
   let min = parseInt(minNum);
-  let max = parseInt(maxNumExclut);
+  let max = parseInt(maxNumExclut) + 1;
   return Math.floor(Math.random() * (max - min) + min);
 }
 
 //fonction qui cree un block 'card'
 function createCard() {
+  //creation des balises
   let card = document.createElement("div");
   card.classList.add("card");
   let operation = document.createElement("div");
@@ -25,15 +27,24 @@ function createCard() {
   let result = document.createElement("div");
   result.classList.add("result");
 
+  //prendre les valeurs de la page html
+  sign.textContent = sb.value;
   num1.textContent = ReturnNumber(min.value, max.value);
   num2.textContent = ReturnNumber(min.value, max.value);
-  console.log(num1.textContent, num2.textContent);
 
-  sign.textContent = "+";
+  //en cas de soustracation, verifier si le deuxieme nombre est inferieur au premier
+  if (sign.textContent == "-") {
+    while (num2.textContent > num1.textContent) {
+      num2.textContent = ReturnNumber(min.value, max.value);
+    }
+  }
+
+  //calculer le resultat
   result.textContent = eval(
-    parseInt(num1.textContent) + parseInt(num2.textContent)
+    parseInt(num1.textContent) + sign.textContent + parseInt(num2.textContent)
   );
 
+  //ajouter le tout dans la balise "container"
   operation.appendChild(num1);
   operation.appendChild(sign);
   operation.appendChild(num2);

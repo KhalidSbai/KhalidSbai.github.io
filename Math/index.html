@@ -9,20 +9,32 @@
   </head>
   <body>
     <div class="form">
+      <h1>Exercices Math CP</h1>
       <form action="">
-        <label for="min">Minimum : </label>
-        <input type="number" name="" id="min" value="10" required />
-        <label for="max">Maximum : </label>
-        <input type="number" id="max" value="99" required />
-        <input type="submit" value="Valider" />
+        <div class="input">
+          <label for="operation">Operation:</label>
+          <select name="" id="operation">
+            <option value="+">+</option>
+            <option value="-">-</option>
+          </select>
+        </div>
+        <div class="input">
+          <label for="min">Minimum : </label>
+          <input type="number" name="" id="min" min="0" value="10" required />
+          <label for="max">Maximum : </label>
+          <input type="number" id="max" value="99" max="999" required />
+        </div>
+        <div class="input">
+          <button type="submit">Valider</button>
+        </div>
       </form>
     </div>
     <div class="container">
       <div class="card test">
         <div class="operation">
-          <div class="num1">35</div>
+          <div class="num1 num">35</div>
           <div class="sign">+</div>
-          <div class="num2">14</div>
+          <div class="num2 num">14</div>
         </div>
         <div class="result">49</div>
       </div>
