@@ -97,7 +97,7 @@
 .card::after{
     content: "";
     position: absolute;
-    bottom: 30px;
+    bottom: 20px;
     right: 0;
     width: 115%;
     height: 1px;
