@@ -33,7 +33,6 @@ async function createCard() {
   let number2 = ReturnNumber(min.value, max.value);
 
   //en cas de soustracation, verifier si le deuxieme nombre est inferieur au premier
-  await verfifierlePlusGrand();
 
   function verfifierlePlusGrand() {
     if (sign.textContent == "-") {
@@ -42,6 +41,7 @@ async function createCard() {
       }
     }
   }
+  await verfifierlePlusGrand();
 
   // mettres les valeurs dans le text des balise html
   num1.textContent = number1;
