@@ -65,7 +65,7 @@ async function createCard() {
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   container.textContent = "";
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 16; i++) {
     createCard();
   }
 });
