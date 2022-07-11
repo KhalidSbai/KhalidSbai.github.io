@@ -78,6 +78,7 @@
 
 /* Container des operations */
 .container{
+    padding-bottom: 40px;
     display: flex;
     justify-content: center;
     align-content: space-around;

@@ -12,7 +12,7 @@ function ReturnNumber(minNum, maxNumExclut) {
 }
 
 //fonction qui cree un block 'card'
-function createCard() {
+async function createCard() {
   //creation des balises
   let card = document.createElement("div");
   card.classList.add("card");
@@ -29,15 +29,23 @@ function createCard() {
 
   //prendre les valeurs de la page html
   sign.textContent = sb.value;
-  num1.textContent = ReturnNumber(min.value, max.value);
-  num2.textContent = ReturnNumber(min.value, max.value);
+  let number1 = ReturnNumber(min.value, max.value);
+  let number2 = ReturnNumber(min.value, max.value);
 
   //en cas de soustracation, verifier si le deuxieme nombre est inferieur au premier
-  if (sign.textContent == "-") {
-    while (num2.textContent > num1.textContent) {
-      num2.textContent = ReturnNumber(min.value, max.value);
+  await verfifierlePlusGrand();
+
+  function verfifierlePlusGrand() {
+    if (sign.textContent == "-") {
+      while (number2 > number1) {
+        number2 = ReturnNumber(min.value, max.value);
+      }
     }
   }
+
+  // mettres les valeurs dans le text des balise html
+  num1.textContent = number1;
+  num2.textContent = number2;
 
   //calculer le resultat
   result.textContent = eval(
