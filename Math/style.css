@@ -90,7 +90,6 @@
     font-size: 4rem;
     border: 1px solid transparent;
     text-align: right;
-    padding: 10px;
     width: 120px;
     letter-spacing: 8px;
 }
@@ -107,6 +106,12 @@
 .operation{
     position: relative;
     border-bottom: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.operation div{
+    text-align: right;
 }
 
 .sign{
