@@ -1400,4 +1400,6 @@ button.addEventListener("click", () => {
   input.forEach((item) => {
     item.value = "";
   });
+  recherche(searchInputPalette, "palette");
+  console.log(document.querySelectorAll("tbody tr").length);
 });
