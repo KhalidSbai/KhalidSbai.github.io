@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+table{
+    border-collapse: collapse;
+    width: 100%;
+}
+table,th, td, tr{
+    border: 1px solid black;
+}
+th{
+    background-color: gray;
+}
+input{
+    margin: 4px;
+    padding: 2px;
+}
+button{
+    margin: 4px;
+    padding: 3px;
+    width: 100px;
+}
+td.palette, td.code, td.codeart{
+    text-align: center;
+}
+td.qteinv{
+    text-align: right;
+}
