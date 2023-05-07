@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Caisse Atacadao Marrakech</title>
+    <style>
+      @font-face {
+        font-family: "MaPolice";
+        src: url("IDAutomationHC39M.ttf") format("truetype");
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        text-align: center;
+        padding: 20px;
+        height: 99vh;
+        width: 100vw;
+      }
+      input {
+        margin-bottom: 20px;
+      }
+      .app {
+        display: flex;
+        height: calc(90vh - 90px);
+        position: relative;
+        justify-content: space-between;
+      }
+      .display {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+      .number {
+        font-size: 150%;
+        flex: 1;
+        justify-items: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "MaPolice", Arial, Helvetica, sans-serif;
+      }
+      .designation {
+        font-size: 2rem;
+      }
+      .quantite {
+        font-size: 4rem;
+      }
+      .button {
+        height: 100%;
+        opacity: 0.05;
+        width: 300px;
+        z-index: 4;
+      }
+      .buttonleft {
+        background-color: #d63384;
+      }
+      .buttonright {
+        background-color: #20c997;
+      }
+      .indexPage {
+        background-color: black;
+        color: aliceblue;
+        display: block;
+        width: fit-content;
+        padding: 5px;
+        border-radius: 10px;
+        font-weight: bold;
+        margin: 5px auto;
+        font-size: 1.5rem;
+        visibility: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- FILE PICKER -->
+    <!-- importer un fichier .csv comportant les colonnes "code","designation" et "quantité" -->
+    <label for="pi">importer votre fichier ".csv" </label>
+    <input type="file" name="filecsv" accept=".csv" id="picker" />
+    <p class="indexPage"></p>
+    <!-- DISPLAY CSV HERE -->
+    <div class="app">
+      <div class="button buttonleft"></div>
+      <div class="display">
+        <p class="number"></p>
+        <p class="designation"></p>
+        <p class="quantite"></p>
+      </div>
+      <div class="button buttonright"></div>
+    </div>
+    <script>
+      const number = document.querySelector(".number");
+      const designation = document.querySelector(".designation");
+      const quantite = document.querySelector(".quantite");
+      const buttonRight = document.querySelector(".buttonright");
+      const buttonLeft = document.querySelector(".buttonleft");
+      const indexPage = document.querySelector(".indexPage");
+      let tableau = [];
+      let index = 1;
+      window.onload = () => {
+        // FILE READER + HTML ELEMENTS
+        const reader = new FileReader(),
+          picker = document.querySelector("input");
+
+        // READ CSV ON FILE PICK
+        picker.onchange = () => {
+          index = 1;
+          tableau = [];
+          reader.readAsText(picker.files[0]);
+        };
+
+        // READ THE CSV FILE 1 GENERATE HTML
+        reader.onloadend = () => {
+          // ENTIRE CSV FILE
+          let csv = reader.result;
+
+          // SPLIT INTO ROWS
+          let rows = csv.split("\r\n");
+
+          // LOOP THROUGH ROWS + SPLIT COLUMNS
+          for (const row of rows) {
+            let cols = row.match(/(?:\"([^\"]*(?:\"\"[^\"]*)*)\")|([^\",]+)/g);
+            if (cols != null) {
+              let col = cols[0].split(";");
+              console.log(col);
+              tableau.push(col);
+            }
+          }
+          console.log(tableau[0]);
+          actualiser(index);
+          indexPage.style.visibility = "visible";
+
+          buttonRight.addEventListener("click", () => {
+            index = index === tableau.length - 1 ? tableau.length - 2 : index;
+            actualiser(index, 1);
+          });
+          buttonLeft.addEventListener("click", () => {
+            index = index === 1 ? 2 : index;
+            actualiser(index, -1);
+          });
+        };
+      };
+
+      function actualiser(ind, ajouter = 0) {
+        //   if (ind > 0 && ind < tableau.length - 1) {
+        console.log(
+          `avant index : ${index}`,
+          `ind : ${ind}`,
+          `taille tableau : ${tableau.length}`
+        );
+        index = ind = ind + ajouter;
+
+        console.log(tableau[ind][0], tableau[ind][1], tableau[ind][2]);
+        number.innerText = `(${tableau[ind][0]})`;
+        designation.innerText = tableau[ind][1];
+        quantite.innerText = tableau[ind][2];
+        indexPage.innerText = `${index}/${tableau.length - 1}`;
+        console.log(
+          `if index : ${ind}`,
+          `ind : ${ind}`,
+          `taille tableau : ${tableau.length}`
+        );
+      }
+    </script>
+  </body>
+</html>
