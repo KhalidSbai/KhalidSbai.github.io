@@ -1,0 +1,73 @@
+@font-face {
+    font-family: "MaPolice";
+    src: url("IDAutomationHC39M.ttf") format("truetype");
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    text-align: center;
+    padding: 20px;
+    /* width: 100vw; */
+  }
+  input {
+    margin-bottom: 20px;
+  }
+  .app {
+    /* display: flex; */
+    /* height: calc(90vh - 90px); */
+    /* position: relative; */
+    /* justify-content: space-between; */
+  }
+  .display {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* justify-content: center; */
+    /* height: 100%; */
+    /* position: absolute; */
+    width: 100%;
+  }
+  .number {
+    font-size: 150%;
+    flex: 1;
+    justify-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "MaPolice", Arial, Helvetica, sans-serif;
+  }
+  .designation {
+    font-size: 2rem;
+  }
+  .quantite {
+    font-size: 4rem;
+    background-color: beige;
+  }
+  .button {
+    height: 100%;
+    opacity: 0.05;
+    width: 300px;
+    z-index: 4;
+  }
+  .buttonleft {
+    background-color: #d63384;
+  }
+  .buttonright {
+    background-color: #20c997;
+  }
+  .indexPage {
+    background-color: black;
+    color: aliceblue;
+    display: block;
+    width: fit-content;
+    padding: 5px;
+    border-radius: 10px;
+    font-weight: bold;
+    margin: 20px auto;
+    font-size: 1.5rem;
+    visibility: hidden;
+  }
