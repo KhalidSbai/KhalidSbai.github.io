@@ -1,4 +1,4 @@
-import { base } from "./base.js";
+import { base, dateValable } from "./base.js";
 import {
   buttons,
   filtrerBase,
@@ -8,12 +8,17 @@ import {
 import { toCard } from "./dom.js";
 
 const cards = document.querySelector(".cards");
+const rayon = document.querySelector(".active-btn").id;
+const inputRecherche = document.getElementById("inputText");
+const baliseDatevalidation = document.querySelector("header p .date");
 
 chargementPage(
   base,
-  document.querySelector(".cards"),
-  document.querySelector(".active-btn").id,
-  document.getElementById("inputText")
+  cards,
+  rayon,
+  inputRecherche,
+  baliseDatevalidation,
+  dateValable
 );
 
 // let nouvelleBase = filtrerBase(base, document.querySelector(".active-btn").id);
@@ -21,7 +26,7 @@ chargementPage(
 //inputText.setAttribute("placeholder", `Rechercher dans ${e.target.id}`);
 
 // buttons(base, cards);
-buttons(base);
+buttons(base, dateValable);
 
 //la recherche sur l input
 inputText.addEventListener("input", (e) => {

@@ -47,10 +47,20 @@ function filtrerBase(base, rayonFilter) {
  * @param {HTMLElement} cardsBaliseHtml la balise "cards" qui englobe tout les card generé.
  * @param {String} rayon rayon choisi pour etre affiché (recuperer par le button cliker)
  * @param {HTMLElement} input (pour afficher dans l input de recherche placeholder de rayon sujet de recherche)
+ * @param {HTMLElement} baliseDateValidation (baslie pour afficher la date de validaiton)
+ * @param {object} datevalidation (la date de validaiton)
  */
-function chargementPage(base, cardsBaliseHtml, rayon, input) {
+function chargementPage(
+  base,
+  cardsBaliseHtml,
+  rayon,
+  input,
+  baliseDateValidation,
+  datevalidation
+) {
   cardsBaliseHtml.innerHTML = toCard(filtrerBase(base, rayon));
   input.setAttribute("placeholder", `Rechercher dans ${rayon}`);
+  baliseDateValidation.innerText = datevalidation[rayon];
 }
 
 //------------------------------------------------------------------------------------->
@@ -60,9 +70,8 @@ function chargementPage(base, cardsBaliseHtml, rayon, input) {
  * @param {String} base
  * @param {HTMLElement} baliseHtml
  */
-function buttons(base) {
+function buttons(base, dateValable) {
   const buttons = document.querySelectorAll(".nav button");
-  const inputText = document.getElementById("inputText");
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", (e) => {
@@ -77,11 +86,10 @@ function buttons(base) {
         base,
         document.querySelector(".cards"),
         document.querySelector(".active-btn").id,
-        document.getElementById("inputText")
+        document.getElementById("inputText"),
+        document.querySelector("header p .date"),
+        dateValable
       );
-      // inputText.setAttribute("placeholder", `Rechercher dans ${e.target.id}`);
-
-      // baliseHtml.innerHTML = toCard(filtrerBase(base, `${e.target.id}`));
     });
   });
 }

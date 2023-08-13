@@ -1,5 +1,5 @@
 import { mettreAJourPrix } from "./function.js";
-export { base };
+export { base, dateValable };
 
 // les colonnes sont (code, designation, prix, rayon, unité)
 // le separateur des champs est @
@@ -229,7 +229,18 @@ const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;agneau
 `;
 
 const frais = fleg + volaille + boucherie;
+
+//les nouveaux prix (code,prix)
 const nouveauPrix = ``;
+
+//date validation des prix
+const dateValable = {
+  legume: "14/08/2023",
+  fruit: "14/08/2023",
+  boucherie: "31/08/2023",
+  volaille: "15/08/2023",
+  poissonnerie: "13/08/2023",
+};
 
 const { base, codeNonTrouver } = mettreAJourPrix(frais, nouveauPrix);
 console.log(codeNonTrouver);
