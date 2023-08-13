@@ -1,3 +1,4 @@
+import { mettreAJourPrix } from "./function.js";
 export { base };
 
 // les colonnes sont (code, designation, prix, rayon, unité)
@@ -227,4 +228,8 @@ const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;agneau
 18613;ROGNON ROUGE DE BŒUF;86,9;boucherie;Kg;boeuf
 `;
 
-const base = fleg + volaille + boucherie;
+const frais = fleg + volaille + boucherie;
+const nouveauPrix = ``;
+
+const { base, codeNonTrouver } = mettreAJourPrix(frais, nouveauPrix);
+console.log(codeNonTrouver);

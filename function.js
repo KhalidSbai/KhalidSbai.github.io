@@ -1,4 +1,10 @@
-export { filtrerBase, recherchePartieDansTableau, buttons, chargementPage };
+export {
+  filtrerBase,
+  recherchePartieDansTableau,
+  buttons,
+  chargementPage,
+  mettreAJourPrix,
+};
 import { toCard } from "./dom.js";
 
 //----------------------------------------------------------------
@@ -78,4 +84,64 @@ function buttons(base) {
       // baliseHtml.innerHTML = toCard(filtrerBase(base, `${e.target.id}`));
     });
   });
+}
+
+//------------------------------------------------------------------------------------->
+
+/**
+ * fonction qui met a jour les prix de la base.
+ * @param {string} uneBase la base globale
+ * @param {string} nouveauPrix les nouveaux prix en string comportent (code,prix)
+ * @returns {object} deux valeurs en retrour, 1ere : la base mise a jour, 2eme: les codes non trouvé pour etre a jour.
+ */
+function mettreAJourPrix(uneBase, nouveauPrix = "") {
+  //si il  n y a pas de nouveau prix retourn immidiatement la base
+  if (nouveauPrix == "") {
+    return {
+      base: uneBase,
+      codeNonTrouver: "",
+    };
+  }
+
+  //variable pour les article non trouvé
+  let codeNonTrouver = [];
+
+  // Convertir la base en tableau de lignes
+  const lignesBase = uneBase
+    .trim()
+    .split("\n")
+    .map((line) => line.split(";"));
+
+  // Convertir les nouveaux prix en tableau de lignes
+  const lignesNouveauxPrix = nouveauPrix
+    .trim()
+    .split("\n")
+    .map((line) => line.split(";"));
+
+  // Créer un dictionnaire des nouveaux prix
+  const nouveauxPrixMap = new Map();
+  for (const lignePrix of lignesNouveauxPrix) {
+    const idProduit = lignePrix[0];
+    const prix = lignePrix[1];
+    nouveauxPrixMap.set(idProduit, prix);
+  }
+
+  // Mettre à jour les prix dans la base
+  for (const ligneBase of lignesBase) {
+    const idProduit = ligneBase[0];
+    if (nouveauxPrixMap.has(idProduit)) {
+      const nouveauPrix = nouveauxPrixMap.get(idProduit);
+      ligneBase[2] = nouveauPrix;
+    } else {
+      codeNonTrouver.push(idProduit);
+    }
+  }
+
+  // Reconstituer la base mise à jour
+  const baseMiseAJour = lignesBase.map((line) => line.join(";")).join("\n");
+
+  return {
+    base: baseMiseAJour,
+    codeNonTrouver: codeNonTrouver.join("\n"),
+  };
 }
