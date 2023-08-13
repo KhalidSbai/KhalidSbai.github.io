@@ -210,14 +210,14 @@ const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;agneau
 7668;COTE A OS DE BOEUF;112,9;boucherie;Kg;boeuf
 7689;ENTRECOTE DE BOEUF;121,9;boucherie;Kg;boeuf
 7676;FAUX FILET;121,9;boucherie;Kg;boeuf
-15394;FILET BOEUF SANS BAVETTE RECEPTION;199,9;boucherie;Kg;boeuf
+15394;FILET BOEUF SANS BAVETTE;199,9;boucherie;Kg;boeuf
 7658;GRAISSE;29,9;boucherie;Kg;boeuf
 7652;JARRET DE BOEUF A/OS;102,9;boucherie;Kg;boeuf
 7654;MERGUEZ BOEUF;85,9;boucherie;Kg;boeuf
-12610;NOIX DE GITE DE BOEUF SV;109,9;boucherie;Kg;boeuf
-7638;RUMSTEAK DE BOEUF SV;118,9;boucherie;Kg;boeuf
-7651;TAGINE DE BOEUF A/OS PROMO;84,9;boucherie;Kg;boeuf
-12649;TRANCHE DE BOEUF SV;112,9;boucherie;Kg;boeuf
+12610;NOIX DE GITE DE BOEUF;109,9;boucherie;Kg;boeuf
+7638;RUMSTEAK DE BOEUF;118,9;boucherie;Kg;boeuf
+7651;TAGINE DE BOEUF A/OS;84,9;boucherie;Kg;boeuf
+12649;TRANCHE DE BOEUF;112,9;boucherie;Kg;boeuf
 7653;VIANDE HACHEE A/GRAISSE;89,9;boucherie;Kg;boeuf
 15419;FOIE DE BOEUF;166,9;boucherie;Kg;boeuf
 11007;FOIE ET COEUR DE BŒUF;139,9;boucherie;Kg;boeuf

@@ -63,6 +63,7 @@ h1 p {
     padding: 3px 10px;
     display: block;
     margin: 8px auto;
+    width: 80%;
 }
 
 .nav {
@@ -208,6 +209,10 @@ span.unite {
         align-content: start;
         flex-wrap: wrap;
         margin-bottom: 24px;
+    }
+
+    #inputText {
+        width: 400px;
     }
 }
 
