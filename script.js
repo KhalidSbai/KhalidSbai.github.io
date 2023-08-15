@@ -1,4 +1,4 @@
-import { base, dateValable } from "./base.js";
+import { articleNonActifNonChanger, base, dateValable } from "./base.js";
 import {
   buttons,
   filtrerBase,

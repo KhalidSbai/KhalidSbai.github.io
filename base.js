@@ -1,5 +1,5 @@
 import { mettreAJourPrix } from "./function.js";
-export { base, dateValable };
+export { base, dateValable, articleActifNonTrouver, articleNonActifNonChanger };
 
 // les colonnes sont (code, designation, prix, rayon, unité)
 // le separateur des champs est @
@@ -169,8 +169,7 @@ const fleg = `6222;TOMATE;12,95;legume;Kg
 6134;FLEURS COMESTIBLES BRQT;69,90;plante;Pce
 `;
 const volaille = `7390;POULET ENTIER;35,9;volaille;Kg
-15388;FILET DE DINDE SV 1KG;62,9;volaille;Kg
-10963;FILET DE DINDE SV 5KG;62,9;volaille;Kg
+10963;FILET DE DINDE;62,9;volaille;Kg
 7571;ABATS DE POULET;38,9;volaille;Kg
 7499;AILES DE POULET;28,9;volaille;Kg
 7572;AILES DE DINDE;27,9;volaille;Kg
@@ -348,17 +347,145 @@ const RestePoissonnerie = `
 
 const frais = fleg + volaille + boucherie + poisssonnerie;
 
+const nouveauPrixVolaille = `7571;36,9
+7499;21,9
+7572;22,9
+7509;41,9
+7387;25,9
+7399;47,9
+7453;18,9
+7514;11,9
+7446;45,9
+7556;54,9
+15388;49,9
+10963;49,9
+7472;78,9
+7441;78,9
+7472;78,9
+7565;36,9
+7522;58,9
+7500;45,9
+7537;19,9
+7554;17,9
+7443;43,9
+7390;34,9
+7616;49,9
+7513;49,9
+7622;49,9
+7612;49,9
+7497;49,9
+7602;49,9
+7479;49,9
+7459;49,9
+7623;47,9
+7617;47,9
+`;
+
 //les nouveaux prix (code,prix)
-const nouveauPrix = ``;
+const nouveauPrixFruitLegume = `13076;5,95
+12479;7,95
+5623;7,95
+10382;7,95
+5763;8,5
+5761;8,5
+5765;8,5
+5673;8,5
+6171;8,5
+5544;8,5
+5675;8,5
+5542;8,5
+6040;8,8
+5769;8,95
+5913;8,95
+5597;8,95
+13946;8,95
+6026;8,95
+5546;8,95
+5515;8,95
+5912;8,95
+6222;8,95
+10475;9,95
+5878;10,95
+5881;10,95
+5635;10,95
+5964;10,95
+5877;10,95
+5640;10,95
+5561;10,95
+6035;12,95
+10403;12,95
+6021;12,95
+6018;12,95
+5952;12,95
+5593;13,9
+6012;13,95
+6033;13,95
+5587;13,95
+6039;13,95
+10351;13,95
+10524;14,5
+127645;14,95
+5982;14,95
+127648;14,95
+5636;14,95
+127650;14,95
+127651;14,95
+6175;14,95
+10473;15,95
+5668;15,95
+10470;15,95
+12915;15,95
+5573;16,95
+10491;17,95
+10521;17,95
+5661;18,9
+5670;18,95
+5622;19,95
+10369;19,95
+10298;19,95
+10437;19,95
+10364;21,95
+10397;21,95
+10401;21,95
+5719;22,95
+10360;23,95
+10393;23,95
+6070;24,3
+11204;28,8
+12861;29,95
+10309;29,95
+5549;29,95
+10317;29,95
+10308;32,95
+10372;36,9
+10563;39,95
+10405;42,95
+10406;42,95
+10568;42,95
+10527;47,8
+10307;49,95
+10536;64,9
+10380;69,95
+10460;69,95
+16654;79,9
+5700;89,95
+10464;96
+16653;96
+10472;99,95
+`;
+
+let nouveauPrix = nouveauPrixFruitLegume + nouveauPrixVolaille;
 
 //date validation des prix
 const dateValable = {
-  legume: "14/08/2023",
-  fruit: "14/08/2023",
-  boucherie: "31/08/2023",
-  volaille: "15/08/2023",
-  poissonnerie: "13/08/2023",
+  legume: "20/08/2023",
+  fruit: "20/08/2023",
+  boucherie: "16/08/2023",
+  volaille: "22/08/2023",
+  poissonnerie: "15/08/2023",
 };
 
-const { base, codeNonTrouver } = mettreAJourPrix(frais, nouveauPrix);
-console.log(codeNonTrouver);
+const { base, articleNonActifNonChanger, articleActifNonTrouver } =
+  mettreAJourPrix(frais, nouveauPrix);
+console.log(`Article non actif non Changer : \n${articleNonActifNonChanger}`);
+console.log(`Article actif non trouver : \n${articleActifNonTrouver}`);

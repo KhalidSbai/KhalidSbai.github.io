@@ -4,8 +4,10 @@ export {
   buttons,
   chargementPage,
   mettreAJourPrix,
+  editionDecimal,
 };
 import { toCard } from "./dom.js";
+import { articleNonActifNonChanger } from "./base.js";
 
 //----------------------------------------------------------------
 
@@ -61,6 +63,7 @@ function chargementPage(
   cardsBaliseHtml.innerHTML = toCard(filtrerBase(base, rayon));
   input.setAttribute("placeholder", `Rechercher dans ${rayon}`);
   baliseDateValidation.innerText = datevalidation[rayon];
+  CacherLesCardsDesArticleNonActif(rayon);
 }
 
 //------------------------------------------------------------------------------------->
@@ -90,6 +93,9 @@ function buttons(base, dateValable) {
         document.querySelector("header p .date"),
         dateValable
       );
+      CacherLesCardsDesArticleNonActif(
+        document.querySelector(".active-btn").id
+      );
     });
   });
 }
@@ -103,16 +109,18 @@ function buttons(base, dateValable) {
  * @returns {object} deux valeurs en retrour, 1ere : la base mise a jour, 2eme: les codes non trouvé pour etre a jour.
  */
 function mettreAJourPrix(uneBase, nouveauPrix = "") {
+  //variable pour les article non trouvé
+  let articleNonChanger = [];
+  let articleNonTrouver = [];
+
   //si il  n y a pas de nouveau prix retourn immidiatement la base
   if (nouveauPrix == "") {
     return {
       base: uneBase,
-      codeNonTrouver: "",
+      articleNonChanger: [],
+      articleNonTrouver: [],
     };
   }
-
-  //variable pour les article non trouvé
-  let codeNonTrouver = [];
 
   // Convertir la base en tableau de lignes
   const lignesBase = uneBase
@@ -141,15 +149,74 @@ function mettreAJourPrix(uneBase, nouveauPrix = "") {
       const nouveauPrix = nouveauxPrixMap.get(idProduit);
       ligneBase[2] = nouveauPrix;
     } else {
-      codeNonTrouver.push(idProduit);
+      articleNonChanger.push(idProduit);
     }
   }
+  //----------------------------------------------------------------->
+
+  // Créer un dictionnaire de base
+  const baseMap = new Map();
+  for (const ligneBase of lignesBase) {
+    const idProduit = ligneBase[0];
+    const prix = ligneBase[2];
+    baseMap.set(idProduit, prix);
+  }
+
+  // rechercher les articles non trouver sur la base
+  for (const lignePrix of lignesNouveauxPrix) {
+    const idProduit = lignePrix[0];
+    if (baseMap.has(idProduit)) {
+    } else {
+      articleNonTrouver.push(idProduit);
+    }
+  }
+
+  //-------------------------------------------------------------->
 
   // Reconstituer la base mise à jour
   const baseMiseAJour = lignesBase.map((line) => line.join(";")).join("\n");
 
   return {
     base: baseMiseAJour,
-    codeNonTrouver: codeNonTrouver.join("\n"),
+    articleNonActifNonChanger: articleNonChanger.join("\n"),
+    articleActifNonTrouver: articleNonTrouver.join("\n"),
   };
+}
+
+//--------------------------------------------------------------------------------->
+/**
+ * le decimal du prix
+ * @param {string} prix
+ * @returns
+ */
+function editionDecimal(prix) {
+  const decimal = prix.split(",")[1];
+  if (decimal == "" || decimal == undefined) {
+    return "00";
+  } else if (decimal < 10) {
+    return decimal + "0";
+  } else {
+    return decimal;
+  }
+}
+//----------------------------------------------------------------------------------->
+
+/**
+ * cacher les card des articles non actif
+ * @param {string} rayon
+ */
+function CacherLesCardsDesArticleNonActif(rayon) {
+  if (rayon == "legume" || rayon == "fruit" || rayon == "volaille") {
+    articleNonActifNonChanger
+      .trim()
+      .split("\n")
+      .forEach((element) => {
+        const className =
+          document.getElementById(`${element}`)?.className.split(" ")[1] ?? "";
+        console.log(className);
+        if (className == rayon) {
+          document.getElementById(`${element}`).classList.add("displaynone");
+        }
+      });
+  }
 }

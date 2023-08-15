@@ -1,3 +1,5 @@
+import { editionDecimal } from "./function.js";
+
 export { toCard };
 
 /**
@@ -8,7 +10,7 @@ function toCard(array) {
   var i = 0;
   return array
     .map(
-      (elem) => /*html*/ `<div class="card ${elem[3]}">
+      (elem) => /*html*/ `<div class="card ${elem[3]}" id="${elem[0]}">
       <div class="image">
         <img src="image/${elem[0]}.jpg" alt="" srcset="" />
       </div>
@@ -20,7 +22,7 @@ function toCard(array) {
         <div class="prix">
           <span class="dh">Dh </span>${
             elem[2].split(",")[0]
-          }<span class="decimal">.${elem[2].split(",")[1] ? "90" : "00"} </span
+          }<span class="decimal">.${editionDecimal(elem[2])} </span
           ><span class="unite">/${elem[4]}</span>
         </div>
       </div>
