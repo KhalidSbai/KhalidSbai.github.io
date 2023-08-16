@@ -19,7 +19,7 @@ function toCard(array) {
       </div>
       <div class="infoCard">
         <div class="designation">
-            <span style="color:red; font-weight:600">${" " || elem[0]} </span>${
+            <span style="color:red; font-weight:600">${"" || elem[0]} </span>${
         elem[1]
       }</div>
         <div class="prix">
