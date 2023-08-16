@@ -4,6 +4,7 @@ import {
   filtrerBase,
   recherchePartieDansTableau,
   chargementPage,
+  CacherLesCardsDesArticleNonActif,
 } from "./function.js";
 import { toCard } from "./dom.js";
 
@@ -34,4 +35,5 @@ inputText.addEventListener("input", (e) => {
   cards.innerHTML = toCard(
     recherchePartieDansTableau(filtrerBase(base, rayon), e.target.value)
   );
+  CacherLesCardsDesArticleNonActif(rayon);
 });

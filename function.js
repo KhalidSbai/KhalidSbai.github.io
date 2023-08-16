@@ -5,6 +5,7 @@ export {
   chargementPage,
   mettreAJourPrix,
   editionDecimal,
+  CacherLesCardsDesArticleNonActif,
 };
 import { toCard } from "./dom.js";
 import { articleNonActifNonChanger } from "./base.js";
@@ -92,9 +93,6 @@ function buttons(base, dateValable) {
         document.getElementById("inputText"),
         document.querySelector("header p .date"),
         dateValable
-      );
-      CacherLesCardsDesArticleNonActif(
-        document.querySelector(".active-btn").id
       );
     });
   });

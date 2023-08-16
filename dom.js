@@ -1,4 +1,7 @@
-import { editionDecimal } from "./function.js";
+import {
+  editionDecimal,
+  CacherLesCardsDesArticleNonActif,
+} from "./function.js";
 
 export { toCard };
 
@@ -43,4 +46,5 @@ function toCard(array) {
     `
     )
     .join("");
+  //CacherLesCardsDesArticleNonActif(document.querySelector(".active-btn").id);
 }
