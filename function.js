@@ -206,7 +206,13 @@ function editionDecimal(prix) {
  * @param {string} rayon
  */
 function CacherLesCardsDesArticleNonActif(rayon) {
-  if (rayon == "legume" || rayon == "fruit" || rayon == "volaille") {
+  if (articleNonActifNonChanger == undefined) return;
+  if (
+    rayon == "legume" ||
+    rayon == "fruit" ||
+    rayon == "volaille" ||
+    rayon == "poissonnerie"
+  ) {
     articleNonActifNonChanger
       .trim()
       .split("\n")

@@ -12,7 +12,7 @@ function toCard(array) {
     .map(
       (elem) => /*html*/ `<div class="card ${elem[3]}" id="${elem[0]}">
       <div class="image">
-        <img src="image/${elem[0]}.jpg" alt="" srcset="" />
+        <img src="image/${elem[5]}.jpg" alt="" srcset="" />
       </div>
       <div class="infoCard">
         <div class="designation">
