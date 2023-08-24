@@ -209,8 +209,8 @@ const volaille = `7390;POULET ENTIER;35,9;volaille;Kg;7390
 7623;VIANDE HACHEE DE DINDE EPICEE;47,9;volaille;Kg;7623
 7617;VIANDE HACHEE DE DINDE NATURE;47,9;volaille;Kg;7617
 `;
-const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;12846;agneau
-12846;AGNELLE ENTIERE;102;boucherie;Kg;12846;agneau
+const boucherie = `11004;AGNEAU ENTIER;97;boucherie;Kg;12846;agneau
+12846;AGNELLE ENTIERE;95;boucherie;Kg;12846;agneau
 12613;CARRE D AGNEAU;118,9;boucherie;Kg;12613;agneau
 7644;COTELETTES D AGNEAU;119,9;boucherie;Kg;7644;agneau
 15108;EPAULE ENTIER D AGNEAU;102,9;boucherie;Kg;15108;agneau
@@ -222,7 +222,7 @@ const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;12846;agneau
 15146;1/4 AVANT DE BŒUF;79;boucherie;Kg;15146;boeuf
 15147;1/4 ARRIERE BŒUF (CUISSE + ALOYAU);83;boucherie;Kg;15147;boeuf
 11002;ALOYAU DE BOEUF;84;boucherie;Kg;11002;boeuf
-15093;CUISSE DE BŒUF (GLOBE);83;boucherie;Kg;15093;boeuf
+15093;CUISSE DE BŒUF (GLOBE);81;boucherie;Kg;15093;boeuf
 7673;BROCHETTE DE BOEUF ;114,9;boucherie;Kg;7673;boeuf
 7668;COTE A OS DE BOEUF;112,9;boucherie;Kg;7668;boeuf
 7689;ENTRECOTE DE BOEUF;121,9;boucherie;Kg;7689;boeuf
@@ -230,7 +230,7 @@ const boucherie = `11004;AGNEAU ENTIER;107;boucherie;Kg;12846;agneau
 15394;FILET BOEUF SANS BAVETTE;199,9;boucherie;Kg;15394;boeuf
 7658;GRAISSE;29,9;boucherie;Kg;7658;boeuf
 7652;JARRET DE BOEUF A/OS;102,9;boucherie;Kg;7652;boeuf
-7654;MERGUEZ BOEUF;85,9;boucherie;Kg;7654;boeuf
+7654;MERGUEZ BOEUF;88,9;boucherie;Kg;7654;boeuf
 12610;NOIX DE GITE DE BOEUF;109,9;boucherie;Kg;12610;boeuf
 7638;RUMSTEAK DE BOEUF;118,9;boucherie;Kg;7638;boeuf
 7651;TAGINE DE BOEUF A/OS;84,9;boucherie;Kg;7651;boeuf
