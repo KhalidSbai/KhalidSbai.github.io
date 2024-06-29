@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scanner de Code à Barres</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    video {
+      width: 100%;
+      max-width: 600px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background: #f4f4f4;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scanner de Code à Barres</h1>
+  <video id="preview" width="100%"></video>
+  <h2>Codes Scannés</h2>
+  <ul id="barcode-list"></ul>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const barcodeList = document.getElementById('barcode-list');
+
+      function addBarcodeToList(code) {
+        const listItem = document.createElement('li');
+        listItem.textContent = code;
+        barcodeList.appendChild(listItem);
+
+        // Enregistrer le code à barres dans le stockage local
+        const storedBarcodes = JSON.parse(localStorage.getItem('barcodes')) || [];
+        storedBarcodes.push(code);
+        localStorage.setItem('barcodes', JSON.stringify(storedBarcodes));
+      }
+
+      function loadStoredBarcodes() {
+        const storedBarcodes = JSON.parse(localStorage.getItem('barcodes')) || [];
+        storedBarcodes.forEach(code => addBarcodeToList(code));
+      }
+
+      Quagga.init({
+        inputStream: {
+          type: "LiveStream",
+          constraints: {
+            facingMode: "environment" // ou "user" pour la caméra frontale
+          },
+          target: document.querySelector('#preview')
+        },
+        decoder: {
+          readers: ["code_128_reader"] // Liste des lecteurs actifs
+        }
+      }, function (err) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log("Initialisation terminée. Prêt à démarrer");
+        Quagga.start();
+      });
+
+      Quagga.onDetected((data) => {
+        const code = data.codeResult.code;
+        console.log(code);
+        addBarcodeToList(code);
+        alert(`Code à barres scanné : ${code}`);
+      });
+
+      loadStoredBarcodes();
+    });
+  </script>
+</body>
+</html>
