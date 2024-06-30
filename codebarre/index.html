@@ -12,10 +12,23 @@
         margin: 0 auto;
         padding: 20px;
       }
-      #video {
+      #video-container {
+        position: relative;
         width: 100%;
         max-width: 640px;
+      }
+      #video {
+        width: 100%;
         height: auto;
+      }
+      #video-border {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 5px solid transparent;
+        pointer-events: none;
       }
       table {
         border-collapse: collapse;
@@ -33,11 +46,28 @@
         padding: 10px;
         font-size: 16px;
       }
+      @keyframes flash-green {
+        0% {
+          border-color: transparent;
+        }
+        50% {
+          border-color: #00ff00;
+        }
+        100% {
+          border-color: transparent;
+        }
+      }
+      .flash-green {
+        animation: flash-green 0.5s;
+      }
     </style>
   </head>
   <body>
     <h1>Scanner de Code-barres</h1>
-    <video id="video"></video>
+    <div id="video-container">
+      <video id="video"></video>
+      <div id="video-border"></div>
+    </div>
     <div>
       <button onclick="startScanner()">Démarrer le scanner</button>
       <button onclick="stopScanner()">Arrêter le scanner</button>
@@ -50,10 +80,17 @@
         <th>Action</th>
       </tr>
     </table>
+    <audio
+      id="beep"
+      src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."
+      preload="auto"
+    ></audio>
 
     <script>
       let codeReader;
       let barcodes = [];
+      const beep = document.getElementById("beep");
+      const videoBorder = document.getElementById("video-border");
 
       function startScanner() {
         codeReader = new ZXing.BrowserMultiFormatReader();
@@ -78,6 +115,8 @@
         if (!barcodes.includes(barcode)) {
           barcodes.push(barcode);
           updateTable();
+          playBeep();
+          flashBorder();
         }
       }
 
@@ -142,6 +181,16 @@
         alert(
           "Les codes-barres ont été copiés dans le presse-papiers. Vous pouvez maintenant les coller pour les partager."
         );
+      }
+
+      function playBeep() {
+        beep.play();
+      }
+
+      function flashBorder() {
+        videoBorder.classList.remove("flash-green");
+        void videoBorder.offsetWidth; // Force reflow
+        videoBorder.classList.add("flash-green");
       }
     </script>
   </body>
