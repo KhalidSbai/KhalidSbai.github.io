@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simulateur de Crédit</title>
+    <title>Simulateur de Crédit - Bank of Africa</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -53,11 +53,21 @@
         background-color: #e6f3ff;
         border-radius: 5px;
       }
+      .mensualite-principale {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #003366;
+        background-color: #ffff99;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>Simulateur de Crédit à la Consommation</h1>
+      <h2>Bank of Africa (BMCE)</h2>
       <form id="creditForm">
         <label for="montant">Montant (Dhs):</label>
         <input
@@ -104,8 +114,14 @@
             (montant * (tauxMensuel * Math.pow(1 + tauxMensuel, duree))) /
             (Math.pow(1 + tauxMensuel, duree) - 1);
 
+          // Calcul de l'assurance mensuelle
+          const assuranceMensuelle = montant * tauxAssurance;
+
+          // Mensualité TTC (avec assurance)
+          const mensualiteTTC = mensualite + assuranceMensuelle;
+
           // Calcul de l'assurance totale
-          const assuranceTotale = montant * tauxAssurance * duree;
+          const assuranceTotale = assuranceMensuelle * duree;
 
           // Coût total des intérêts
           const coutInterets = mensualite * duree - montant;
@@ -121,15 +137,27 @@
           const interetAssuranceMensuel =
             (coutInterets + assuranceTotale) / duree;
 
+          // Mensualité si le crédit était gratuit
+          const mensualiteGratuite = montant / duree;
+
           // Affichage des résultats
           const resultat = document.getElementById("resultat");
           resultat.innerHTML = `
                 <h3>Résultats de la simulation :</h3>
+                <div class="mensualite-principale">Mensualité TTC (avec assurance) : ${Math.round(
+                  mensualiteTTC
+                )} Dhs/Mois</div>
                 <p>Mensualité TTC (hors assurance) : ${Math.round(
                   mensualite
                 )} Dhs/Mois</p>
                 <p>Montant demandé : ${montant.toFixed(0)} Dhs</p>
                 <p>Durée du crédit : ${duree} Mois</p>
+                <p>Mensualité TTC (hors assurance) : ${Math.round(
+                  mensualite
+                )} Dhs/Mois</p>
+                <p>Mensualité si le crédit était gratuit : ${Math.round(
+                  mensualiteGratuite
+                )} Dhs/Mois</p>
                 <p>Assurance : ${Math.round(assuranceTotale)} Dhs</p>
                 <p>Frais de dossier : Gratuit</p>
                 <p>Total intérêts : ${Math.round(coutInterets)} Dhs</p>
