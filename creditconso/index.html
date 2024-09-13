@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulateur de Crédit</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h2 {
+        color: #003366;
+        text-align: center;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #003366;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #004080;
+      }
+      #resultat {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #e6f3ff;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Simulateur de Crédit à la Consommation</h1>
+      <form id="creditForm">
+        <label for="montant">Montant (Dhs):</label>
+        <input
+          type="number"
+          id="montant"
+          required
+          min="10000"
+          max="600000"
+          value="80000"
+        />
+
+        <label for="duree">Durée (Mois):</label>
+        <input
+          type="number"
+          id="duree"
+          required
+          min="12"
+          max="120"
+          value="50"
+        />
+
+        <button type="submit">Simuler</button>
+      </form>
+      <div id="resultat"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("creditForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const montant = parseFloat(document.getElementById("montant").value);
+          const duree = parseInt(document.getElementById("duree").value);
+
+          // Taux d'intérêt mensuel ajusté pour correspondre aux résultats
+          const tauxMensuel = 0.005694; // environ 6.83% par an
+
+          // Taux d'assurance mensuel
+          const tauxAssurance = 0.001108; // environ 0.1108% par mois
+
+          // Calcul de la mensualité (hors assurance)
+          const mensualite =
+            (montant * (tauxMensuel * Math.pow(1 + tauxMensuel, duree))) /
+            (Math.pow(1 + tauxMensuel, duree) - 1);
+
+          // Calcul de l'assurance totale
+          const assuranceTotale = montant * tauxAssurance * duree;
+
+          // Coût total des intérêts
+          const coutInterets = mensualite * duree - montant;
+
+          // Coût total du crédit (hors assurance)
+          const coutTotalHorsAssurance = montant + coutInterets;
+
+          // Coût total du crédit (avec frais et assurance)
+          const coutTotalAvecAssurance =
+            coutTotalHorsAssurance + assuranceTotale;
+
+          // Intérêt (incluant l'assurance) par mois
+          const interetAssuranceMensuel =
+            (coutInterets + assuranceTotale) / duree;
+
+          // Affichage des résultats
+          const resultat = document.getElementById("resultat");
+          resultat.innerHTML = `
+                <h3>Résultats de la simulation :</h3>
+                <p>Mensualité TTC (hors assurance) : ${Math.round(
+                  mensualite
+                )} Dhs/Mois</p>
+                <p>Montant demandé : ${montant.toFixed(0)} Dhs</p>
+                <p>Durée du crédit : ${duree} Mois</p>
+                <p>Assurance : ${Math.round(assuranceTotale)} Dhs</p>
+                <p>Frais de dossier : Gratuit</p>
+                <p>Total intérêts : ${Math.round(coutInterets)} Dhs</p>
+                <p>Coût total du crédit (hors frais et assurance) : ${Math.round(
+                  coutTotalHorsAssurance
+                )} Dhs</p>
+                <p>Coût total du crédit (avec frais et assurance) : ${Math.round(
+                  coutTotalAvecAssurance
+                )} Dhs</p>
+                <p>Intérêt (incluant l'assurance) par mois : ${Math.round(
+                  interetAssuranceMensuel
+                )} Dhs</p>
+                <p><em>* Échéance à titre indicatif. Le taux et la simulation proposés peuvent changer en fonction de votre profil.</em></p>
+            `;
+        });
+    </script>
+  </body>
+</html>
