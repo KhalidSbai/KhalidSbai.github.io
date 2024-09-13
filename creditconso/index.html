@@ -62,6 +62,9 @@
         border-radius: 5px;
         margin-bottom: 15px;
       }
+      p.interet {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -167,7 +170,7 @@
                 <p>Coût total du crédit (avec frais et assurance) : ${Math.round(
                   coutTotalAvecAssurance
                 )} Dhs</p>
-                <p>Intérêt (incluant l'assurance) par mois : ${Math.round(
+                <p class="interet">Intérêt (incluant l'assurance) par mois : ${Math.round(
                   interetAssuranceMensuel
                 )} Dhs</p>
                 <p><em>* Échéance à titre indicatif. Le taux et la simulation proposés peuvent changer en fonction de votre profil.</em></p>
