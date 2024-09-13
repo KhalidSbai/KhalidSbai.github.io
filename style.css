@@ -37,7 +37,7 @@ header .logo {
 header .logo img {
     width: 100%;
     object-fit: fill;
-    visibility: hidden;
+    visibility: visible;
 }
 
 header p {
