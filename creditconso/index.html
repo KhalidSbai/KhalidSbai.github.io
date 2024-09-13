@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simulateur de Crédit - Bank of Africa</title>
+    <title>Simulateur de Crédit</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -70,27 +70,19 @@
   <body>
     <div class="container">
       <h1>Simulateur de Crédit à la Consommation</h1>
-      <h2>Bank of Africa (BMCE)</h2>
       <form id="creditForm">
         <label for="montant">Montant (Dhs):</label>
         <input
           type="number"
           id="montant"
           required
-          min="10000"
-          max="600000"
+          min="5000"
+          max="500000"
           value="80000"
         />
 
         <label for="duree">Durée (Mois):</label>
-        <input
-          type="number"
-          id="duree"
-          required
-          min="12"
-          max="120"
-          value="50"
-        />
+        <input type="number" id="duree" required min="6" max="120" value="50" />
 
         <button type="submit">Simuler</button>
       </form>
@@ -150,9 +142,6 @@
                 <div class="mensualite-principale">Mensualité TTC (avec assurance) : ${Math.round(
                   mensualiteTTC
                 )} Dhs/Mois</div>
-                <p>Mensualité TTC (hors assurance) : ${Math.round(
-                  mensualite
-                )} Dhs/Mois</p>
                 <p>Montant demandé : ${montant.toFixed(0)} Dhs</p>
                 <p>Durée du crédit : ${duree} Mois</p>
                 <p>Mensualité TTC (hors assurance) : ${Math.round(
