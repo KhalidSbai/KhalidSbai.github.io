@@ -257,7 +257,7 @@ span.unite {
 /* Medium */
 @media (min-width : 1200px) {
     .content {
-        width: calc(100% - 10%);
+        width: calc(100% - 20%);
     }
 
     .cards {
