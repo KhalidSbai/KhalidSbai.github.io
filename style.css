@@ -15,10 +15,10 @@ body {
 }
 
 .content {
-    padding-left: 15px;
-    padding-right: 15px;
-    margin-left: auto;
-    margin-right: auto;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-left: 0;
+    margin-right: 0;
 
 }
 
@@ -117,13 +117,13 @@ h1 p {
 .cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 5px;
     justify-content: space-around;
     align-content: start;
     flex-wrap: wrap;
     margin-bottom: 24px;
     border-top: 1px solid black;
-    padding: 10px;
+    padding: 5px;
 
 }
 
@@ -198,19 +198,55 @@ span.unite {
 
 /* START RESPONSIVE */
 
-/* Small */
-@media (min-width : 768px) {
+@media (min-width : 446px) {
     .content {
-        width: 750px;
+        padding-left: 0px;
+        padding-right: 0px;
+        margin-left: auto;
+        margin-right: auto;
+        width: calc(100% - 8%);
     }
 
     .cards {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
         justify-content: space-around;
         align-content: start;
         flex-wrap: wrap;
         margin-bottom: 24px;
+        border-top: 1px solid black;
+        padding: 10px;
+
+    }
+}
+
+
+@media (min-width : 660px) {
+    .content {
+        width: calc(100% - 5%);
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    #inputText {
+        width: calc(100% - 120px);
+    }
+}
+
+
+/* Small */
+@media (min-width : 1020px) {
+    .content {
+        width: calc(100% - 8%);
+    }
+
+    .cards {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
     }
 
     #inputText {
@@ -219,9 +255,9 @@ span.unite {
 }
 
 /* Medium */
-@media (min-width : 992px) {
+@media (min-width : 1200px) {
     .content {
-        width: 970px;
+        width: calc(100% - 10%);
     }
 
     .cards {
@@ -230,9 +266,9 @@ span.unite {
 }
 
 /* Small */
-@media (min-width : 1200px) {
+@media (min-width : 1600px) {
     .content {
-        width: 1170px;
+        width: calc(100% - 10%);
     }
 
     .cards {
