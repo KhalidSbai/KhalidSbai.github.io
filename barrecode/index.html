@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scanner de Codes-Barres</title>
+    
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --danger-color: #f44336;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1a1a;
+                --text-color: #ffffff;
+                --border-color: #444444;
+                --shadow: 0 2px 10px rgba(255,255,255,0.1);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #45a049);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .scanner-container {
+            position: relative;
+            width: 100%;
+            height: 40vh;
+            background: #000;
+            overflow: hidden;
+        }
+
+        #scanner {
+            width: 100%;
+            height: 100%;
+        }
+
+        #scanner video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 90%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            left: 5%;
+            top: 50%;
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100px); }
+        }
+
+        .flash-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(76, 175, 80, 0.7);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        .flash-overlay.active {
+            opacity: 1;
+        }
+
+        .controls {
+            padding: 1rem;
+            background: var(--bg-color);
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
+        }
+
+        .codes-section {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .codes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .codes-count {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .codes-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .code-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: 500;
+            word-break: break-all;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            animation: pop 0.3s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0.8); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .start-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 30;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.2rem; }
+            button { font-size: 0.9rem; padding: 0.6rem 1.2rem; }
+            .code-text { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📷 Scanner de Codes-Barres</h1>
+        </header>
+
+        <div class="scanner-container">
+            <div id="scanner"></div>
+            <div class="scan-line"></div>
+            <div class="flash-overlay" id="flashOverlay"></div>
+            <button id="startButton" class="start-button">Démarrer le Scanner</button>
+        </div>
+
+        <div class="controls">
+            <button class="btn-secondary" onclick="shareList()">
+                📤 Partager la liste
+            </button>
+            <button class="btn-primary" onclick="downloadList()">
+                💾 Enregistrer (CSV)
+            </button>
+        </div>
+
+        <div class="codes-section">
+            <div class="codes-header">
+                <h2>Codes scannés</h2>
+                <span class="codes-count" id="codesCount">0</span>
+            </div>
+            
+            <div id="codesList">
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="7" y1="7" x2="7" y2="17"/>
+                        <line x1="12" y1="7" x2="12" y2="17"/>
+                        <line x1="17" y1="7" x2="17" y2="12"/>
+                    </svg>
+                    <p>Aucun code scanné</p>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem;">Pointez la caméra vers un code-barres</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <!-- Script QuaggaJS depuis CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    
+    <script>
+        // Variables globales
+        let scannedCodes = [];
+        let isScanning = false;
+        let lastScannedTime = 0;
+        
+        // Charger les codes depuis localStorage au démarrage
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCodesFromStorage();
+            updateCodesList();
+        });
+
+        // Fonction pour créer un bip sonore avec Web Audio API
+        function playBeep() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800; // Fréquence du bip
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        // Fonction pour afficher le flash
+        function showFlash() {
+            const flashOverlay = document.getElementById('flashOverlay');
+            flashOverlay.classList.add('active');
+            setTimeout(() => {
+                flashOverlay.classList.remove('active');
+            }, 500);
+        }
+
+        // Fonction pour afficher une notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialiser le scanner
+        document.getElementById('startButton').addEventListener('click', function() {
+            this.style.display = 'none';
+            startScanner();
+        });
+
+        function startScanner() {
+            if (isScanning) return;
+            
+            isScanning = true;
+            
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#scanner'),
+                    constraints: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: "environment"
+                    }
+                },
+                locator: {
+                    patchSize: "medium",
+                    halfSample: true
+                },
+                numOfWorkers: navigator.hardwareConcurrency || 2,
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ]
+                },
+                locate: true
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    showNotification("Erreur: Impossible d'accéder à la caméra");
+                    document.getElementById('startButton').style.display = 'block';
+                    return;
+                }
+                Quagga.start();
+            });
+
+            // Gestion de la détection
+            Quagga.onDetected(function(result) {
+                const code = result.codeResult.code;
+                const currentTime = Date.now();
+                
+                // Éviter les détections multiples rapides du même code
+                if (currentTime - lastScannedTime < 1000) {
+                    return;
+                }
+                
+                lastScannedTime = currentTime;
+                
+                // Vérifier les doublons
+                if (scannedCodes.includes(code)) {
+                    showNotification("⚠️ Code déjà scanné: " + code);
+                    playBeep();
+                    showFlash();
+                    return;
+                }
+                
+                // Ajouter le code
+                scannedCodes.push(code);
+                saveToStorage();
+                updateCodesList();
+                
+                // Feedback
+                playBeep();
+                showFlash();
+                showNotification("✅ Code ajouté: " + code);
+            });
+        }
+
+        // Mettre à jour l'affichage de la liste
+        function updateCodesList() {
+            const codesList = document.getElementById('codesList');
+            const codesCount = document.getElementById('codesCount');
+            
+            codesCount.textContent = scannedCodes.length;
+            
+            if (scannedCodes.length === 0) {
+                codesList.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="7" y1="7" x2="7" y2="17"/>
+                            <line x1="12" y1="7" x2="12" y2="17"/>
+                            <line x1="17" y1="7" x2="17" y2="12"/>
+                        </svg>
+                        <p>Aucun code scanné</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Pointez la caméra vers un code-barres</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            codesList.innerHTML = scannedCodes.map((code, index) => `
+                <div class="code-item">
+                    <span class="code-text">${code}</span>
+                    <button class="btn-danger" onclick="removeCode(${index})">
+                        🗑️ Supprimer
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Supprimer un code
+        function removeCode(index) {
+            scannedCodes.splice(index, 1);
+            saveToStorage();
+            updateCodesList();
+            showNotification("Code supprimé");
+        }
+
+        // Sauvegarder dans localStorage
+        function saveToStorage() {
+            try {
+                localStorage.setItem('scannedCodes', JSON.stringify(scannedCodes));
+            } catch (e) {
+                console.log('localStorage non disponible');
+            }
+        }
+
+        // Charger depuis localStorage
+        function loadCodesFromStorage() {
+            try {
+                const stored = localStorage.getItem('scannedCodes');
+                if (stored) {
+                    scannedCodes = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.log('localStorage non disponible');
+            }
+        }
+
+        // Partager la liste
+        function shareList() {
+            if (scannedCodes.length === 0) {
+                showNotification("Aucun code à partager");
+                return;
+            }
+            
+            const text = "Codes scannés:\n" + scannedCodes.join('\n');
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Liste des codes-barres',
+                    text: text
+                }).catch(err => {
+                    // Fallback: copier dans le presse-papier
+                    copyToClipboard(text);
+                });
+            } else {
+                // Fallback: copier dans le presse-papier
+                copyToClipboard(text);
+            }
+        }
+
+        // Copier dans le presse-papier
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showNotification("📋 Liste copiée dans le presse-papier");
+                });
+            } else {
+                // Fallback pour les anciens navigateurs
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification("📋 Liste copiée dans le presse-papier");
+            }
+        }
+
+        // Télécharger la liste en CSV
+        function downloadList() {
+            if (scannedCodes.length === 0) {
+                showNotification("Aucun code à enregistrer");
+                return;
+            }
+            
+            // Créer le contenu CSV
+            const csvContent = "Code-barres\n" + scannedCodes.join('\n');
+            
+            // Créer un blob et télécharger
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'codes_scannes.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification("📥 Fichier téléchargé");
+        }
+
+        // Gérer la fermeture de la page
+        window.addEventListener('beforeunload', () => {
+            if (isScanning) {
+                Quagga.stop();
+            }
+        });
+    </script>
+</body>
+</html>
