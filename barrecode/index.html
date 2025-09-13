@@ -109,6 +109,29 @@
             opacity: 1;
         }
 
+        .scan-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 250px;
+            height: 150px;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            z-index: 15;
+        }
+
+        .scan-area::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+        }
+
         .controls {
             padding: 1rem;
             background: var(--bg-color);
@@ -183,11 +206,6 @@
             font-size: 0.9rem;
         }
 
-        .codes-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
         .code-item {
             display: flex;
             justify-content: space-between;
@@ -216,6 +234,12 @@
             font-size: 1rem;
             font-weight: 500;
             word-break: break-all;
+        }
+
+        .code-confidence {
+            font-size: 0.8rem;
+            color: #666;
+            margin-left: 0.5rem;
         }
 
         .empty-state {
@@ -268,6 +292,18 @@
             border-radius: 10px;
         }
 
+        .quality-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            z-index: 25;
+        }
+
         @media (max-width: 480px) {
             h1 { font-size: 1.2rem; }
             button { font-size: 0.9rem; padding: 0.6rem 1.2rem; }
@@ -284,7 +320,9 @@
         <div class="scanner-container">
             <div id="scanner"></div>
             <div class="scan-line"></div>
+            <div class="scan-area"></div>
             <div class="flash-overlay" id="flashOverlay"></div>
+            <div class="quality-indicator" id="qualityIndicator">Qualité: --</div>
             <button id="startButton" class="start-button">Démarrer le Scanner</button>
         </div>
 
@@ -328,6 +366,8 @@
         let scannedCodes = [];
         let isScanning = false;
         let lastScannedTime = 0;
+        let detectionBuffer = new Map(); // Buffer pour validation des détections
+        let qualityThreshold = 75; // Seuil de qualité minimum
         
         // Charger les codes depuis localStorage au démarrage
         window.addEventListener('DOMContentLoaded', () => {
@@ -337,21 +377,25 @@
 
         // Fonction pour créer un bip sonore avec Web Audio API
         function playBeep() {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800; // Fréquence du bip
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.2);
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } catch (e) {
+                console.log('Audio non disponible');
+            }
         }
 
         // Fonction pour afficher le flash
@@ -371,6 +415,60 @@
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 2000);
+        }
+
+        // Validation de code-barres
+        function isValidBarcode(code, format) {
+            // Vérifier la longueur minimale
+            if (code.length < 4) return false;
+            
+            // Vérifier les caractères valides selon le format
+            switch (format) {
+                case 'ean_reader':
+                case 'ean_8_reader':
+                    return /^\d{8,13}$/.test(code);
+                case 'upc_reader':
+                case 'upc_e_reader':
+                    return /^\d{6,12}$/.test(code);
+                case 'code_128_reader':
+                    return /^[\x20-\x7E]+$/.test(code) && code.length >= 6;
+                case 'code_39_reader':
+                    return /^[0-9A-Z\-\.\$\/\+\%\*\s]+$/.test(code) && code.length >= 4;
+                default:
+                    return code.length >= 6;
+            }
+        }
+
+        // Calculer la qualité de détection
+        function calculateQuality(result) {
+            if (!result.codeResult.decodedCodes) return 0;
+            
+            let totalQuality = 0;
+            let count = 0;
+            
+            result.codeResult.decodedCodes.forEach(code => {
+                if (code.error !== undefined) {
+                    const quality = Math.max(0, 100 - code.error * 100);
+                    totalQuality += quality;
+                    count++;
+                }
+            });
+            
+            return count > 0 ? Math.round(totalQuality / count) : 0;
+        }
+
+        // Mettre à jour l'indicateur de qualité
+        function updateQualityIndicator(quality) {
+            const indicator = document.getElementById('qualityIndicator');
+            indicator.textContent = `Qualité: ${quality}%`;
+            
+            if (quality >= 80) {
+                indicator.style.background = 'rgba(76, 175, 80, 0.8)';
+            } else if (quality >= 60) {
+                indicator.style.background = 'rgba(255, 152, 0, 0.8)';
+            } else {
+                indicator.style.background = 'rgba(244, 67, 54, 0.8)';
+            }
         }
 
         // Initialiser le scanner
@@ -397,23 +495,48 @@
                 },
                 locator: {
                     patchSize: "medium",
-                    halfSample: true
+                    halfSample: false, // Améliore la précision
+                    debug: {
+                        showCanvas: false,
+                        showPatches: false,
+                        showFoundPatches: false,
+                        showSkeleton: false,
+                        showLabels: false,
+                        showPatchLabels: false,
+                        showRemainingPatchLabels: false,
+                        boxFromPatches: {
+                            showTransformed: false,
+                            showTransformedBox: false,
+                            showBB: false
+                        }
+                    }
                 },
-                numOfWorkers: navigator.hardwareConcurrency || 2,
+                numOfWorkers: Math.min(navigator.hardwareConcurrency || 2, 4),
                 decoder: {
                     readers: [
                         "code_128_reader",
                         "ean_reader",
                         "ean_8_reader",
                         "code_39_reader",
-                        "code_39_vin_reader",
-                        "codabar_reader",
                         "upc_reader",
-                        "upc_e_reader",
-                        "i2of5_reader"
-                    ]
+                        "upc_e_reader"
+                    ],
+                    debug: {
+                        drawBoundingBox: false,
+                        showFrequency: false,
+                        drawScanline: false,
+                        showPattern: false
+                    },
+                    multiple: false // Une seule détection à la fois
                 },
-                locate: true
+                locate: true,
+                frequency: 10, // Réduire la fréquence de scan
+                area: { // Zone de scan restreinte
+                    top: "25%",
+                    right: "75%",
+                    left: "25%",
+                    bottom: "75%"
+                }
             }, function(err) {
                 if (err) {
                     console.error(err);
@@ -424,35 +547,99 @@
                 Quagga.start();
             });
 
-            // Gestion de la détection
+            // Gestion de la détection avec validation avancée
             Quagga.onDetected(function(result) {
                 const code = result.codeResult.code;
+                const format = result.codeResult.format;
                 const currentTime = Date.now();
+                const quality = calculateQuality(result);
                 
-                // Éviter les détections multiples rapides du même code
-                if (currentTime - lastScannedTime < 1000) {
+                // Mettre à jour l'indicateur de qualité
+                updateQualityIndicator(quality);
+                
+                // Vérifier la qualité minimale
+                if (quality < qualityThreshold) {
+                    console.log(`Qualité insuffisante: ${quality}% pour ${code}`);
                     return;
+                }
+                
+                // Éviter les détections multiples rapides
+                if (currentTime - lastScannedTime < 2000) {
+                    return;
+                }
+                
+                // Validation du format de code-barres
+                if (!isValidBarcode(code, format)) {
+                    console.log(`Code invalide: ${code} (format: ${format})`);
+                    return;
+                }
+                
+                // Buffer de validation - confirmer la détection
+                if (!detectionBuffer.has(code)) {
+                    detectionBuffer.set(code, {
+                        count: 1,
+                        firstSeen: currentTime,
+                        quality: quality,
+                        format: format
+                    });
+                    return;
+                } else {
+                    const buffer = detectionBuffer.get(code);
+                    buffer.count++;
+                    
+                    // Confirmer seulement après 2 détections de qualité dans un délai raisonnable
+                    if (buffer.count >= 2 && (currentTime - buffer.firstSeen) < 3000) {
+                        detectionBuffer.delete(code);
+                    } else if ((currentTime - buffer.firstSeen) > 3000) {
+                        // Reset si trop de temps s'est écoulé
+                        detectionBuffer.delete(code);
+                        return;
+                    } else {
+                        return; // Attendre plus de confirmations
+                    }
                 }
                 
                 lastScannedTime = currentTime;
                 
                 // Vérifier les doublons
-                if (scannedCodes.includes(code)) {
+                if (scannedCodes.some(item => item.code === code)) {
                     showNotification("⚠️ Code déjà scanné: " + code);
                     playBeep();
                     showFlash();
                     return;
                 }
                 
-                // Ajouter le code
-                scannedCodes.push(code);
+                // Ajouter le code avec ses métadonnées
+                scannedCodes.push({
+                    code: code,
+                    format: format,
+                    quality: quality,
+                    timestamp: new Date().toLocaleString('fr-FR')
+                });
+                
                 saveToStorage();
                 updateCodesList();
                 
                 // Feedback
                 playBeep();
                 showFlash();
-                showNotification("✅ Code ajouté: " + code);
+                showNotification(`✅ Code ajouté: ${code} (${quality}%)`);
+                
+                // Nettoyer le buffer périodiquement
+                setTimeout(() => {
+                    const now = Date.now();
+                    for (const [key, value] of detectionBuffer.entries()) {
+                        if (now - value.firstSeen > 5000) {
+                            detectionBuffer.delete(key);
+                        }
+                    }
+                }, 5000);
+            });
+
+            // Gestion de la détection partielle pour feedback visuel
+            Quagga.onProcessed(function(result) {
+                const quality = result ? calculateQuality(result) : 0;
+                updateQualityIndicator(quality);
             });
         }
 
@@ -479,14 +666,25 @@
                 return;
             }
             
-            codesList.innerHTML = scannedCodes.map((code, index) => `
-                <div class="code-item">
-                    <span class="code-text">${code}</span>
-                    <button class="btn-danger" onclick="removeCode(${index})">
-                        🗑️ Supprimer
-                    </button>
-                </div>
-            `).join('');
+            codesList.innerHTML = scannedCodes.map((item, index) => {
+                const code = typeof item === 'string' ? item : item.code;
+                const quality = typeof item === 'object' ? item.quality : '';
+                const format = typeof item === 'object' ? item.format : '';
+                const timestamp = typeof item === 'object' ? item.timestamp : '';
+                
+                return `
+                    <div class="code-item">
+                        <div>
+                            <span class="code-text">${code}</span>
+                            ${quality ? `<span class="code-confidence">(${quality}% - ${format})</span>` : ''}
+                            ${timestamp ? `<div style="font-size: 0.7rem; color: #999; margin-top: 0.25rem;">${timestamp}</div>` : ''}
+                        </div>
+                        <button class="btn-danger" onclick="removeCode(${index})">
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Supprimer un code
@@ -525,18 +723,20 @@
                 return;
             }
             
-            const text = "Codes scannés:\n" + scannedCodes.join('\n');
+            const text = "Codes scannés:\n" + scannedCodes.map(item => {
+                const code = typeof item === 'string' ? item : item.code;
+                const quality = typeof item === 'object' && item.quality ? ` (${item.quality}%)` : '';
+                return code + quality;
+            }).join('\n');
             
             if (navigator.share) {
                 navigator.share({
                     title: 'Liste des codes-barres',
                     text: text
                 }).catch(err => {
-                    // Fallback: copier dans le presse-papier
                     copyToClipboard(text);
                 });
             } else {
-                // Fallback: copier dans le presse-papier
                 copyToClipboard(text);
             }
         }
@@ -548,7 +748,6 @@
                     showNotification("📋 Liste copiée dans le presse-papier");
                 });
             } else {
-                // Fallback pour les anciens navigateurs
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
                 document.body.appendChild(textArea);
@@ -566,16 +765,22 @@
                 return;
             }
             
-            // Créer le contenu CSV
-            const csvContent = "Code-barres\n" + scannedCodes.join('\n');
+            // Créer le contenu CSV avec métadonnées
+            let csvContent = "Code-barres,Format,Qualité,Date\n";
+            csvContent += scannedCodes.map(item => {
+                if (typeof item === 'string') {
+                    return `"${item}","","",""`;
+                } else {
+                    return `"${item.code}","${item.format || ''}","${item.quality || ''}","${item.timestamp || ''}"`;
+                }
+            }).join('\n');
             
-            // Créer un blob et télécharger
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
             link.setAttribute('href', url);
-            link.setAttribute('download', 'codes_scannes.csv');
+            link.setAttribute('download', `codes_scannes_${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
             
             document.body.appendChild(link);
