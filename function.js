@@ -8,26 +8,23 @@ export {
   CacherLesCardsDesArticleNonActif,
 };
 import { toCard } from "./dom.js";
-import { articleNonActifNonChanger } from "./base.js";
-
-//----------------------------------------------------------------
 
 /**
- * fonction pour recherche une chaine de carractere dans un tableau
+ * Recherche une chaîne de caractères dans un tableau
  * @param {Array} tableau
  * @param {string} chaineRechercher
  * @returns {Array}
  */
 function recherchePartieDansTableau(tableau, chaineRechercher) {
+  if (!chaineRechercher) return tableau;
+  
   return tableau.filter((element) =>
-    element[1].includes(chaineRechercher.toUpperCase())
+    element[1].toUpperCase().includes(chaineRechercher.toUpperCase())
   );
 }
 
-//------------------------------------------------------------------------>
 /**
- * fonction pour traiter une chaine de carractere , qu est ici est une base special pour cet application (separateur ";");
- * la filtrer selon le rayon choisi et retrun un tableau
+ * Filtre la base selon le rayon choisi
  * @param {String} base
  * @param {String} rayonFilter
  * @returns {Array}
@@ -37,21 +34,18 @@ function filtrerBase(base, rayonFilter) {
     .trim()
     .split("\n")
     .map((line) => line.split(";"))
-    .filter((line) => {
-      return line[3] == rayonFilter;
-    });
+    .filter((line) => line[3] === rayonFilter);
 }
 
-//-------------------------------------------------------------------------->
-
 /**
- * function de chargement de page
- * @param {String} base base de donné string
- * @param {HTMLElement} cardsBaliseHtml la balise "cards" qui englobe tout les card generé.
- * @param {String} rayon rayon choisi pour etre affiché (recuperer par le button cliker)
- * @param {HTMLElement} input (pour afficher dans l input de recherche placeholder de rayon sujet de recherche)
- * @param {HTMLElement} baliseDateValidation (baslie pour afficher la date de validaiton)
- * @param {object} datevalidation (la date de validaiton)
+ * Charge et affiche une page avec les produits du rayon sélectionné
+ * @param {String} base
+ * @param {HTMLElement} cardsBaliseHtml
+ * @param {String} rayon
+ * @param {HTMLElement} input
+ * @param {HTMLElement} baliseDateValidation
+ * @param {Object} datevalidation
+ * @param {String} articlesNonActifs
  */
 function chargementPage(
   base,
@@ -59,120 +53,105 @@ function chargementPage(
   rayon,
   input,
   baliseDateValidation,
-  datevalidation
+  datevalidation,
+  articlesNonActifs = ""
 ) {
-  cardsBaliseHtml.innerHTML = toCard(filtrerBase(base, rayon));
+  cardsBaliseHtml.innerHTML = toCard(filtrerBase(base, rayon), articlesNonActifs);
   input.setAttribute("placeholder", `Rechercher dans ${rayon}`);
-  baliseDateValidation.innerText = datevalidation[rayon];
+  input.value = ""; // Réinitialiser la recherche
+  baliseDateValidation.innerText = datevalidation[rayon] || "Date non disponible";
   CacherLesCardsDesArticleNonActif(rayon);
 }
 
-//------------------------------------------------------------------------------------->
-
 /**
- * function pour les bouttons ET  lancer le filtrage de base pour les afficher dans le dom
+ * Gère les événements des boutons de navigation
  * @param {String} base
- * @param {HTMLElement} baliseHtml
+ * @param {Object} dateValable
+ * @param {String} articlesNonActifs
  */
-function buttons(base, dateValable) {
+function buttons(base, dateValable, articlesNonActifs = "") {
   const buttons = document.querySelectorAll(".nav button");
 
   buttons.forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      buttons.forEach((btn) => {
-        btn.classList.remove("active-btn");
-      });
+      // Retirer la classe active de tous les boutons
+      buttons.forEach((b) => b.classList.remove("active-btn"));
 
-      //ajouter la class active au boutton cliker
+      // Ajouter la classe active au bouton cliqué
       btn.classList.add("active-btn");
 
+      // Charger le contenu du rayon sélectionné
       chargementPage(
         base,
         document.querySelector(".cards"),
-        document.querySelector(".active-btn").id,
+        btn.id,
         document.getElementById("inputText"),
         document.querySelector("header p .date"),
-        dateValable
+        dateValable,
+        articlesNonActifs
       );
     });
   });
 }
 
-//------------------------------------------------------------------------------------->
-
 /**
- * fonction qui met a jour les prix de la base.
- * @param {string} uneBase la base globale
- * @param {string} nouveauPrix les nouveaux prix en string comportent (code,prix)
- * @returns {object} deux valeurs en retrour, 1ere : la base mise a jour, 2eme: les codes non trouvé pour etre a jour.
+ * Met à jour les prix de la base
+ * @param {string} uneBase
+ * @param {string} nouveauPrix
+ * @returns {Object}
  */
 function mettreAJourPrix(uneBase, nouveauPrix = "") {
-  //variable pour les article non trouvé
   let articleNonChanger = [];
   let articleNonTrouver = [];
 
-  //si il  n y a pas de nouveau prix retourn immidiatement la base
-  if (nouveauPrix == "") {
+  if (!nouveauPrix) {
     return {
       base: uneBase,
-      articleNonChanger: [],
-      articleNonTrouver: [],
+      articleNonActifNonChanger: "",
+      articleActifNonTrouver: "",
     };
   }
 
-  // Convertir la base en tableau de lignes
+  // Convertir la base en tableau
   const lignesBase = uneBase
     .trim()
     .split("\n")
     .map((line) => line.split(";"));
 
-  // Convertir les nouveaux prix en tableau de lignes
-  const lignesNouveauxPrix = nouveauPrix
+  // Convertir les nouveaux prix en Map pour recherche rapide
+  const nouveauxPrixMap = new Map();
+  nouveauPrix
     .trim()
     .split("\n")
-    .map((line) => line.split(";"));
+    .forEach((ligne) => {
+      const [code, prix] = ligne.split(";");
+      if (code && prix) {
+        nouveauxPrixMap.set(code, prix);
+      }
+    });
 
-  // Créer un dictionnaire des nouveaux prix
-  const nouveauxPrixMap = new Map();
-  for (const lignePrix of lignesNouveauxPrix) {
-    const idProduit = lignePrix[0];
-    const prix = lignePrix[1];
-    nouveauxPrixMap.set(idProduit, prix);
-  }
+  // Créer une Map de la base pour vérifier les articles
+  const baseMap = new Map(lignesBase.map(ligne => [ligne[0], ligne]));
 
   // Mettre à jour les prix dans la base
-  for (const ligneBase of lignesBase) {
-    const idProduit = ligneBase[0];
-    if (nouveauxPrixMap.has(idProduit)) {
-      const nouveauPrix = nouveauxPrixMap.get(idProduit);
-      ligneBase[2] = nouveauPrix;
+  lignesBase.forEach((ligne) => {
+    const code = ligne[0];
+    if (nouveauxPrixMap.has(code)) {
+      ligne[2] = nouveauxPrixMap.get(code);
     } else {
-      articleNonChanger.push(idProduit);
+      articleNonChanger.push(code);
     }
-  }
-  //----------------------------------------------------------------->
+  });
 
-  // Créer un dictionnaire de base
-  const baseMap = new Map();
-  for (const ligneBase of lignesBase) {
-    const idProduit = ligneBase[0];
-    const prix = ligneBase[2];
-    baseMap.set(idProduit, prix);
-  }
-
-  // rechercher les articles non trouver sur la base
-  for (const lignePrix of lignesNouveauxPrix) {
-    const idProduit = lignePrix[0];
-    if (baseMap.has(idProduit)) {
-    } else {
-      articleNonTrouver.push(idProduit);
+  // Trouver les articles non trouvés dans la base
+  nouveauxPrixMap.forEach((prix, code) => {
+    if (!baseMap.has(code)) {
+      articleNonTrouver.push(code);
     }
-  }
+  });
 
-  //-------------------------------------------------------------->
-
-  // Reconstituer la base mise à jour
-  const baseMiseAJour = lignesBase.map((line) => line.join(";")).join("\n");
+  // Reconstituer la base
+  const baseMiseAJour = lignesBase.map((ligne) => ligne.join(";")).join("\n");
 
   return {
     base: baseMiseAJour,
@@ -181,46 +160,47 @@ function mettreAJourPrix(uneBase, nouveauPrix = "") {
   };
 }
 
-//--------------------------------------------------------------------------------->
 /**
- * le decimal du prix
+ * Formate la partie décimale du prix
  * @param {string} prix
- * @returns
+ * @returns {string}
  */
 function editionDecimal(prix) {
-  const decimal = prix.split(",")[1];
-  if (decimal == "" || decimal == undefined) {
+  const parties = prix.split(",");
+  if (parties.length < 2 || !parties[1]) {
     return "00";
-  } else if (decimal < 10) {
-    return decimal + "0";
-  } else {
-    return decimal;
   }
+  
+  const decimal = parties[1];
+  return decimal.length === 1 ? decimal + "0" : decimal;
 }
-//----------------------------------------------------------------------------------->
 
 /**
- * cacher les card des articles non actif
+ * Cache les cartes des articles non actifs
  * @param {string} rayon
  */
 function CacherLesCardsDesArticleNonActif(rayon) {
-  if (articleNonActifNonChanger == undefined) return;
-  if (
-    rayon == "legume" ||
-    rayon == "fruit" ||
-    rayon == "volaille" ||
-    rayon == "poissonnerie"
-  ) {
-    articleNonActifNonChanger
-      .trim()
-      .split("\n")
-      .forEach((element) => {
-        const className =
-          document.getElementById(`${element}`)?.className.split(" ")[1] ?? "";
-        console.log(className);
-        if (className == rayon) {
-          document.getElementById(`${element}`).classList.add("displaynone");
-        }
-      });
-  }
+  // Import dynamique pour éviter la dépendance circulaire
+  import("./base.js").then((module) => {
+    const { articleNonActifNonChanger } = module;
+    
+    if (!articleNonActifNonChanger) return;
+
+    const rayonsActifs = ["legume", "fruit", "volaille", "poissonnerie"];
+    
+    if (rayonsActifs.includes(rayon)) {
+      articleNonActifNonChanger
+        .trim()
+        .split("\n")
+        .forEach((code) => {
+          const element = document.getElementById(code);
+          if (element) {
+            const elementRayon = element.className.split(" ")[1];
+            if (elementRayon === rayon) {
+              element.classList.add("displaynone");
+            }
+          }
+        });
+    }
+  });
 }

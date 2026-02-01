@@ -277,7 +277,7 @@ span.unite {
 }
 
 .displaynone {
-    display: none;
+    display: none !important;
 }
 
 
@@ -294,33 +294,97 @@ section {
 }
 
 @media print {
-    .cards {
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+    
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .container {
+        width: 100%;
+    }
+    
+    .content {
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    /* Forcer toutes les cartes à s'afficher */
+    .card {
+        display: flex !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        height: auto;
+        min-height: 180px;
+        max-height: 200px;
+    }
+    
+    .card .image {
+        max-height: 120px;
+    }
+    
+    .card .image img {
+        min-height: 100px;
+        max-height: 120px;
+    }
+    
+    /* Masquer uniquement les cartes avec displaynone */
+    .card.displaynone {
+        display: none !important;
     }
 
-    .page-break:nth-of-type(16n) {
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        padding: 5px;
+        width: 100%;
+        margin: 0 auto;
+        justify-items: center;
+    }
+    
+    /* Gérer le saut de page via page-break */
+    .page-break {
         display: block;
         grid-column: 1 / span 4;
         page-break-after: always;
+        break-after: page;
+        height: 0;
+        visibility: hidden;
     }
-
-    section:nth-of-type(16n) {
+    
+    section {
         display: block;
         grid-column: 1 / span 4;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+        width: 100%;
     }
 
     /* Masquer certains éléments qui ne doivent pas être imprimés */
     .no-print,
     #inputText,
     button:not(.active-btn) {
-        display: none;
+        display: none !important;
     }
 
     button.active-btn {
         font-size: 1.6rem;
         width: auto;
         padding: 5px 10px;
+        margin-bottom: 10px;
+    }
+    
+    header {
+        margin-bottom: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 10px;
     }
 
 }
