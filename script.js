@@ -1,55 +1,54 @@
 import { chargerDonnees } from "./base.js";
 import {
   buttons,
-  filtrerBase,
-  recherchePartieDansTableau,
+  filtrerParRayon,
+  rechercheParDesignation,
   chargementPage,
-  CacherLesCardsDesArticleNonActif,
 } from "./function.js";
-import { toCard } from "./dom.js";
+import { toCard, genererBoutonsRayons } from "./dom.js";
 
-// Attendre le chargement des données avant d'initialiser l'application
+/**
+ * Initialise l'application
+ */
 async function initialiserApp() {
   const data = await chargerDonnees();
   
   if (!data) {
     console.error('Impossible de charger les données');
+    document.querySelector('.cards').innerHTML = 
+      '<p style="text-align:center; padding:20px;">Erreur de chargement des données</p>';
     return;
   }
   
-  const { produits, dateValable } = data;
+  const { produitsAvecPrix, dateValable, rayons } = data;
   
-  // Importer articleNonActifNonChanger depuis base.js
-  const baseModule = await import("./base.js");
-  const articlesNonActifs = baseModule.articleNonActifNonChanger || "";
+  // Générer les boutons de navigation
+  genererBoutonsRayons(rayons);
   
   const cards = document.querySelector(".cards");
-  const rayon = document.querySelector(".active-btn").id;
   const inputRecherche = document.getElementById("inputText");
   const baliseDatevalidation = document.querySelector("header p .date");
 
-  // Charger la page initiale
+  // Charger la page initiale (premier rayon)
+  const rayonInitial = rayons[0];
   chargementPage(
-    produits,
+    produitsAvecPrix,
     cards,
-    rayon,
+    rayonInitial,
     inputRecherche,
     baliseDatevalidation,
-    dateValable,
-    articlesNonActifs
+    dateValable
   );
 
-  // Initialiser les boutons
-  buttons(produits, dateValable, articlesNonActifs);
+  // Initialiser les boutons (après génération)
+  buttons(produitsAvecPrix, dateValable);
 
   // Gérer la recherche
   inputRecherche.addEventListener("input", (e) => {
-    const rayon = document.querySelector(".active-btn").id;
-    cards.innerHTML = toCard(
-      recherchePartieDansTableau(filtrerBase(produits, rayon), e.target.value),
-      articlesNonActifs
-    );
-    CacherLesCardsDesArticleNonActif(rayon);
+    const rayonActif = document.querySelector(".active-btn").id;
+    const produitsDuRayon = filtrerParRayon(produitsAvecPrix, rayonActif);
+    const resultatRecherche = rechercheParDesignation(produitsDuRayon, e.target.value);
+    cards.innerHTML = toCard(resultatRecherche);
   });
 }
 
