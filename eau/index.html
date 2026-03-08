@@ -11,7 +11,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Prix Eaux SK">
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUHJpeCBFYXV4IFNLIiwic2hvcnRfbmFtZSI6IlByaXggRWF1eCIsImRlc2NyaXB0aW9uIjoiQXBwbGljYXRpb24gZGUgZ8OpbsOpcmF0aW9uIGRlIGRldmlzIHBvdXIgZWF1eCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMjE5NkYzIiwib3JpZW50YXRpb24iOiJhbnkiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIGZpbGw9JyUyMzIxOTZGMycvJTNFJTNDcGF0aCBkPSdNMjAwIDEwMGg0MHYzMDBoLTQweiUyME0yMDAgODBjMC0xMCAxMC0yMCAyMC0yMCAxMCAwIDIwIDEwIDIwIDIwdjIwaC00MHonIGZpbGw9JyUyM2ZmZicvJTNFJTNDZWxsaXBzZSBjeD0nMjIwJyBjeT0nNDIwJyByeD0nNDAnIHJ5PScyMCcgZmlsbD0nJTIzZmZmJy8lM0UlM0NwYXRoIGQ9J00yNDAgODBjMC0yMC0yMC00MC00MC00MC0yMCAwLTQwIDIwLTQwIDQwdjIwaDgwdicgZmlsbD0nJTIzZmZmJy8lM0UlM0NlbGxpcHNlIGN4PScyMjAnIGN5PScxMDAnIHJ4PSc0MCcgcnk9JzEwJyBmaWxsPSclMjNmZmYnLyUzRSUzQy9zdmclM0UiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifV19">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232196F3'/%3E%3Cpath d='M200 100h40v300h-40z M200 80c0-10 10-20 20-20 10 0 20 10 20 20v20h-40z' fill='%23fff'/%3E%3Cellipse cx='220' cy='420' rx='40' ry='20' fill='%23fff'/%3E%3Cpath d='M240 80c0-20-20-40-40-40-20 0-40 20-40 40v20h80v' fill='%23fff'/%3E%3Cellipse cx='220' cy='100' rx='40' ry='10' fill='%23fff'/%3E%3C/svg%3E">
     
     <style>
@@ -75,8 +74,15 @@
             background: #45a049;
         }
 
-        .btn-install.show {
-            display: inline-block;
+        /* Afficher le bouton sur mobile par défaut */
+        @media screen and (max-width: 768px) {
+            .btn-install {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+                padding: 12px;
+                font-size: 15px;
+            }
         }
 
         .main-layout {
@@ -395,6 +401,12 @@
             /* Bouton installation visible uniquement sur mobile */
             .btn-install.show {
                 display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-install {
+                display: block !important;
                 width: 100%;
                 margin-bottom: 10px;
                 padding: 12px;
@@ -1064,74 +1076,69 @@ ART007;Produit Eta;44,60;42,30;40,50;38,70;49,00;MarqueD;45`;
         }
 
         // ============================================
-        // PWA - Service Worker et Installation
+        // PWA - Installation
         // ============================================
         
-        // Enregistrer le Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = `
-                    self.addEventListener('install', (e) => {
-                        self.skipWaiting();
-                    });
-                    
-                    self.addEventListener('activate', (e) => {
-                        self.clients.claim();
-                    });
-                    
-                    self.addEventListener('fetch', (e) => {
-                        e.respondWith(
-                            fetch(e.request).catch(() => {
-                                return new Response('Application hors ligne', {
-                                    headers: { 'Content-Type': 'text/plain' }
-                                });
-                            })
-                        );
-                    });
-                `;
-                
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                
-                navigator.serviceWorker.register(swUrl)
-                    .then(() => console.log('✅ PWA prête'))
-                    .catch(err => console.log('❌ Service Worker:', err));
-            });
-        }
+        // Créer le manifest dynamiquement
+        const manifestData = {
+            name: "Prix Eaux SK",
+            short_name: "Prix Eaux",
+            description: "Application de génération de devis pour eaux",
+            start_url: window.location.href,
+            display: "standalone",
+            background_color: "#ffffff",
+            theme_color: "#2196F3",
+            orientation: "any",
+            icons: [{
+                src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%232196F3'/%3E%3Cpath d='M200 100h40v300h-40z M200 80c0-10 10-20 20-20 10 0 20 10 20 20v20h-40z' fill='%23fff'/%3E%3Cellipse cx='220' cy='420' rx='40' ry='20' fill='%23fff'/%3E%3Cpath d='M240 80c0-20-20-40-40-40-20 0-40 20-40 40v20h80v' fill='%23fff'/%3E%3Cellipse cx='220' cy='100' rx='40' ry='10' fill='%23fff'/%3E%3C/svg%3E",
+                sizes: "512x512",
+                type: "image/svg+xml",
+                purpose: "any maskable"
+            }]
+        };
+        
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = manifestURL;
+        document.head.appendChild(manifestLink);
 
         // Gérer l'installation PWA
         let deferredPrompt;
         
         window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ PWA prête à être installée');
             e.preventDefault();
             deferredPrompt = e;
-            
-            // Afficher le bouton uniquement sur mobile
-            const isMobile = window.innerWidth <= 768;
-            const btnInstall = document.getElementById('btnInstall');
-            
-            if (isMobile && btnInstall) {
-                btnInstall.classList.add('show');
-            }
         });
 
         // Fonction pour installer l'application
         function installerApp() {
-            if (!deferredPrompt) return;
+            // Vérifier si on est sur iOS
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
             
-            deferredPrompt.prompt();
+            if (isIOS) {
+                alert("📱 Installation sur iOS/Safari:\n\n1. Appuyez sur le bouton Partager 📤 (en bas)\n2. Faites défiler et tapez 'Sur l'écran d'accueil'\n3. Tapez 'Ajouter'\n\n✅ L'application sera installée sur votre écran d'accueil !");
+                return;
+            }
             
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('✅ Application installée');
-                }
-                deferredPrompt = null;
+            // Sur Android avec Chrome
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
                 
-                const btnInstall = document.getElementById('btnInstall');
-                if (btnInstall) {
-                    btnInstall.classList.remove('show');
-                }
-            });
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('✅ Application installée');
+                    } else {
+                        console.log('❌ Installation annulée');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // Fallback pour autres navigateurs Android
+                alert("📱 Installation sur Android:\n\n1. Appuyez sur Menu ⋮ (en haut à droite)\n2. Sélectionnez 'Installer l'application' ou 'Ajouter à l'écran d'accueil'\n\n✅ L'application sera installée !");
+            }
         }
 
         // Masquer le bouton après installation
@@ -1139,7 +1146,7 @@ ART007;Produit Eta;44,60;42,30;40,50;38,70;49,00;MarqueD;45`;
             console.log('✅ Installation confirmée');
             const btnInstall = document.getElementById('btnInstall');
             if (btnInstall) {
-                btnInstall.classList.remove('show');
+                btnInstall.style.display = 'none';
             }
         });
     </script>
