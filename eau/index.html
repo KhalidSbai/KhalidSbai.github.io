@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Changement de prix Eaux - SK</title>
+    <title>Changement de prix - SK</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Application de génération de devis client">
+    <meta name="theme-color" content="#2196F3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Devis SK">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQ2hhbmdlbWVudCBkZSBwcml4IC0gU0siLCJzaG9ydF9uYW1lIjoiRGV2aXMgU0siLCJkZXNjcmlwdGlvbiI6IkFwcGxpY2F0aW9uIGRlIGfDqW7DqXJhdGlvbiBkZSBkZXZpcyBjbGllbnQiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzIxOTZGMyIsIm9yaWVudGF0aW9uIjoiYW55IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMicgZmlsbD0nJTIzMjE5NkYzJyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIGZpbGw9JyUyMzIxOTZGMycvJTNFJTNDdGV4dCB4PSc1MCUyNScgeT0nNTAlMjUnIGZvbnQtc2l6ZT0nMzAwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZSclM0VTSyUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%232196F3'%3E%3Crect width='512' height='512' fill='%232196F3'/%3E%3Ctext x='50%25' y='50%25' font-size='300' fill='white' text-anchor='middle' dominant-baseline='middle'%3ESK%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -238,6 +247,45 @@
             background: #F57C00;
         }
 
+        .btn-install {
+            display: none;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-install:hover {
+            background: #45a049;
+        }
+
+        .btn-install.show {
+            display: inline-block;
+        }
+
+        .btn-install {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .btn-install:hover {
+            background: #45a049;
+        }
+
+        .btn-install.show {
+            display: inline-block;
+        }
+
         input[type="number"] {
             width: 80px;
         }
@@ -359,6 +407,18 @@
 
             .file-upload input[type="file"] {
                 width: 100%;
+            }
+
+            /* Bouton installation visible sur mobile */
+            .btn-install.show {
+                display: block;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .btn-install {
+                width: 100%;
+                margin-top: 5px;
             }
 
             /* Layout mobile : tout en vertical */
@@ -623,21 +683,17 @@
             .empty-message {
                 display: none !important;
             }
-
-            input[type="number"] {
-                border: none;
-		outline: none;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header no-print">
-            <h1>Générateur de Devis Client</h1>
+            <h1>Changement de prix - SK</h1>
             <div class="file-upload">
                 <label>Charger un nouveau CSV :</label>
                 <input type="file" id="csvFileInput" accept=".csv">
+                <button id="btnInstall" class="btn-install" onclick="installerApp()">📱 Installer l'app</button>
             </div>
         </div>
 
@@ -891,9 +947,9 @@ ART007;Produit Eta;44,60;42,30;40,50;38,70;49,00;MarqueD;45`;
 
         // Calculer le prix accordé pour un article
         function calculerPrixAccorde(item, totalDevis) {
-            /*if (item.quantite >= item.packParPalette && item.packParPalette > 0) {
+            if (item.quantite >= item.packParPalette && item.packParPalette > 0) {
                 return item.prixPalette;
-            }*/
+            }
             
             if (totalDevis >= 5000) {
                 return item.prix5000;
@@ -1013,13 +1069,160 @@ ART007;Produit Eta;44,60;42,30;40,50;38,70;49,00;MarqueD;45`;
             window.print();
         }
 
-        // Fermer la modal en cliquant à l'extérieur
+                // Fermer la modal en cliquant à l'extérieur
         window.onclick = function(event) {
             const modal = document.getElementById('pdfModal');
             if (event.target == modal) {
                 fermerModalPDF();
             }
         }
+
+        // ============================================
+        // PWA - Service Worker et Installation
+        // ============================================
+        
+        // Enregistrer le Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', (e) => {
+                        self.clients.claim();
+                    });
+                    
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            fetch(e.request).catch(() => {
+                                return new Response('Application hors ligne', {
+                                    headers: { 'Content-Type': 'text/plain' }
+                                });
+                            })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('✅ PWA prête'))
+                    .catch(err => console.log('❌ Service Worker:', err));
+            });
+        }
+
+        // Gérer l'installation PWA
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Afficher le bouton uniquement sur mobile
+            const isMobile = window.innerWidth <= 768;
+            const btnInstall = document.getElementById('btnInstall');
+            
+            if (isMobile && btnInstall) {
+                btnInstall.classList.add('show');
+            }
+        });
+
+        // Fonction pour installer l'application
+        function installerApp() {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('✅ Application installée');
+                }
+                deferredPrompt = null;
+                
+                const btnInstall = document.getElementById('btnInstall');
+                if (btnInstall) {
+                    btnInstall.classList.remove('show');
+                }
+            });
+        }
+
+        // Masquer le bouton après installation
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ Installation confirmée');
+            const btnInstall = document.getElementById('btnInstall');
+            if (btnInstall) {
+                btnInstall.classList.remove('show');
+            }
+        });
+    
+
+        // Service Worker pour PWA (installation)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Créer un service worker inline
+                const swCode = `
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', (e) => {
+                        self.clients.claim();
+                    });
+                    
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            fetch(e.request).catch(() => {
+                                return new Response('Application hors ligne', {
+                                    headers: { 'Content-Type': 'text/plain' }
+                                });
+                            })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('PWA prête à être installée'))
+                    .catch(err => console.log('Service Worker erreur:', err));
+            });
+        }
+
+        // Détecter l'événement d'installation PWA
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Afficher le bouton d'installation
+            const btnInstall = document.getElementById('btnInstall');
+            if (btnInstall) {
+                btnInstall.classList.add('show');
+            }
+        });
+
+        // Fonction pour installer l'application
+        function installerApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Application installée');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('btnInstall').classList.remove('show');
+                });
+            }
+        }
+
+        // Détecter quand l'app est installée
+        window.addEventListener('appinstalled', () => {
+            console.log('Application installée avec succès');
+            document.getElementById('btnInstall').classList.remove('show');
+        });
     </script>
 </body>
 </html>
