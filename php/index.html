@@ -7,66 +7,108 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#58a6ff;
-    --text:#c9d1d9;--subtext:#8b949e;
-    --hl-q:#1f3a5f;--hl-q-border:#58a6ff;
-    --hl-a:#1a2f1a;--hl-a-border:#3fb950;--hl-a-glow:#3fb95044;
-  }
-  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-  header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0}
-  header h1{font-size:.95rem;font-weight:600;color:var(--accent)}
-  .badge{background:#21262d;border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:.72rem;color:var(--subtext)}
-  .badge.th{border-color:#58a6ff44;color:#58a6ff}.badge.pr{border-color:#f7816644;color:#f78166}
-  .tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--panel)}
-  .tab{padding:10px 24px;cursor:pointer;font-size:.85rem;color:var(--subtext);border-bottom:2px solid transparent;transition:.2s;user-select:none}
-  .tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-  main{display:flex;flex:1;overflow:hidden}
-  .panel{flex:1;overflow-y:auto;padding:20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  .panel::-webkit-scrollbar{width:6px}.panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-  .divider{width:1px;background:var(--border);flex-shrink:0}
-  .part-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--subtext);padding:4px 0 12px;border-bottom:1px solid var(--border);margin-bottom:14px}
-  .part-title span{color:var(--accent)}
-  .q-item{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-  .q-item:hover{border-color:var(--accent);background:#1c2230}
-  .q-item.active{background:var(--hl-q);border-color:var(--hl-q-border);box-shadow:0 0 0 1px #58a6ff33}
-  .q-item .q-num{font-size:.7rem;font-weight:700;color:var(--accent);margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
-  .q-item .q-num .pts{background:#21262d;border-radius:20px;padding:2px 8px;font-size:.65rem;color:#f0883e}
-  .q-item .q-text{font-size:.82rem;line-height:1.5;color:var(--text)}
-  .q-item.active .q-text{color:#fff}
-  .ans-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;transition:all .4s}
-  .ans-block.highlighted{border-color:var(--hl-a-border);box-shadow:0 0 20px var(--hl-a-glow),0 0 0 1px #3fb95033}
-  .ans-header{padding:10px 16px;background:#0d1117;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);font-size:.75rem}
-  .ans-header .ans-label{color:#3fb950;font-weight:600}.ans-header .ans-q{color:var(--subtext)}
-  .ans-block.highlighted .ans-header{background:var(--hl-a)}
-  pre{margin:0!important;border-radius:0!important}
-  pre code.hljs{padding:16px!important;font-size:.78rem!important;line-height:1.6!important;background:#0d1117!important}
-  .ans-block.highlighted pre code.hljs{background:#0a160a!important}
-  .note{padding:10px 16px;font-size:.79rem;color:#d29922;background:#21262d44;border-top:1px solid var(--border);line-height:1.6}
-  .note strong{color:#f0883e}
-  .note code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:.75rem;color:#79c0ff}
-  .scroll-hint{position:fixed;bottom:20px;right:20px;background:#21262d;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.75rem;color:var(--subtext);opacity:0;transition:.3s;pointer-events:none}
-  .scroll-hint.show{opacity:1}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#58a6ff;
+  --text:#c9d1d9;--subtext:#8b949e;
+  --hl-q:#1f3a5f;--hl-q-border:#58a6ff;
+  --hl-a:#1a2f1a;--hl-a-border:#3fb950;--hl-a-glow:#3fb95044;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+
+/* ── HEADER ── */
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex-shrink:0}
+header h1{font-size:.9rem;font-weight:600;color:var(--accent);flex:1;min-width:160px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{background:#21262d;border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:.7rem;color:var(--subtext)}
+.badge.th{border-color:#58a6ff44;color:#58a6ff}.badge.pr{border-color:#f7816644;color:#f78166}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0}
+.tab{flex:1;text-align:center;padding:10px 8px;cursor:pointer;font-size:.8rem;color:var(--subtext);border-bottom:2px solid transparent;transition:.2s;user-select:none}
+.tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── DESKTOP LAYOUT ── */
+.desktop-main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 94px)}
+.left-panel,.right-panel{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.left-panel::-webkit-scrollbar,.right-panel::-webkit-scrollbar{width:5px}
+.left-panel::-webkit-scrollbar-thumb,.right-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.divider{width:1px;background:var(--border);flex-shrink:0}
+
+/* ── MOBILE LAYOUT ── */
+.mobile-main{display:none;flex-direction:column;flex:1;overflow-y:auto;padding:12px;gap:10px}
+
+/* ── QUESTION ITEMS ── */
+.part-title{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--subtext);padding:4px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.part-title span{color:var(--accent)}
+.q-item{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:all .2s}
+.q-item:hover{border-color:var(--accent);background:#1c2230}
+.q-item.active{background:var(--hl-q);border-color:var(--hl-q-border);box-shadow:0 0 0 1px #58a6ff22}
+.q-num{font-size:.68rem;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.pts{background:#21262d;border-radius:20px;padding:2px 8px;font-size:.63rem;color:#f0883e}
+.q-text{font-size:.8rem;line-height:1.5;color:var(--text)}
+.q-item.active .q-text{color:#fff}
+
+/* ── ANSWER BLOCKS ── */
+.ans-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .4s;margin-bottom:14px}
+.ans-block.highlighted{border-color:var(--hl-a-border);box-shadow:0 0 20px var(--hl-a-glow),0 0 0 1px #3fb95033}
+.ans-header{padding:9px 14px;background:#0d1117;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);font-size:.72rem;gap:8px;flex-wrap:wrap}
+.ans-label{color:#3fb950;font-weight:600}.ans-q{color:var(--subtext);font-size:.68rem}
+.ans-block.highlighted .ans-header{background:var(--hl-a)}
+pre{margin:0!important;border-radius:0!important;overflow-x:auto}
+pre code.hljs{padding:14px!important;font-size:.75rem!important;line-height:1.6!important;background:#0d1117!important;white-space:pre!important}
+.ans-block.highlighted pre code.hljs{background:#0a160a!important}
+.note{padding:10px 14px;font-size:.76rem;color:#d29922;background:#21262d44;border-top:1px solid var(--border);line-height:1.6}
+.note strong{color:#f0883e}
+.note code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:.72rem;color:#79c0ff}
+
+/* ── MOBILE ACCORDION ── */
+.mob-q-item{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.mob-q-item.open{border-color:var(--hl-a-border);box-shadow:0 0 16px var(--hl-a-glow)}
+.mob-q-btn{width:100%;background:none;border:none;color:var(--text);cursor:pointer;padding:12px 14px;text-align:left;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.mob-q-item.open .mob-q-btn{background:var(--hl-q)}
+.mob-q-left{flex:1}
+.mob-q-num{font-size:.68rem;font-weight:700;color:var(--accent);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.mob-q-text{font-size:.79rem;line-height:1.45;color:var(--text);text-align:left}
+.mob-chevron{color:var(--subtext);font-size:1rem;transition:transform .3s;flex-shrink:0;margin-top:2px}
+.mob-q-item.open .mob-chevron{transform:rotate(180deg);color:var(--hl-a-border)}
+.mob-answer{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.mob-q-item.open .mob-answer{max-height:9999px}
+
+/* ── SCROLL HINT ── */
+.scroll-hint{position:fixed;bottom:18px;right:16px;background:#21262d;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.72rem;color:var(--subtext);opacity:0;transition:.3s;pointer-events:none;z-index:100}
+.scroll-hint.show{opacity:1}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .desktop-main{display:none}
+  .mobile-main{display:flex}
+  body{overflow-y:auto}
+  pre code.hljs{font-size:.7rem!important;padding:12px!important}
+}
 </style>
 </head>
 <body>
 
 <header>
   <h1>📚 Révision PHP — Transport &amp; Voyage</h1>
-  <span class="badge th">Théorique · 14pts</span>
-  <span class="badge pr">Pratique · 26pts</span>
+  <div class="badges">
+    <span class="badge th">Théorique · 14pts</span>
+    <span class="badge pr">Pratique · 26pts</span>
+  </div>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('th',this)">🧠 Partie Théorique (OOP)</div>
-  <div class="tab" onclick="switchTab('pr',this)">💻 Partie Pratique (Web PHP)</div>
+  <div class="tab active" onclick="switchTab('th',this)">🧠 Théorique (OOP)</div>
+  <div class="tab" onclick="switchTab('pr',this)">💻 Pratique (Web PHP)</div>
 </div>
 
-<main>
-  <div class="panel" id="left-panel">
+<!-- ════════════ DESKTOP ════════════ -->
+<div class="desktop-main">
+  <div class="left-panel" id="left-panel">
+
     <div id="tab-th">
-      <div class="part-title">Partie théorique — <span>Classes Transport &amp; Autocar</span></div>
+      <div class="part-title">Théorique — <span>Transport &amp; Autocar</span></div>
       <div class="q-item" onclick="goTo(0)">
         <div class="q-num">Q1 <span class="pts">2 pts</span></div>
         <div class="q-text">Écrire la <strong>classe abstraite Transport</strong> avec ses attributs (<code>idTrans</code>, <code>vitesse</code>, <code>capacite</code>) et un constructeur avec paramètres.</div>
@@ -81,7 +123,7 @@
       </div>
       <div class="q-item" onclick="goTo(3)">
         <div class="q-num">Q4 <span class="pts">2 pts</span></div>
-        <div class="q-text">Écrire la classe <strong>Autocar</strong> (hérite de Transport) avec les attributs supplémentaires (<code>marque</code>, <code>prixTicket</code>) et son constructeur.</div>
+        <div class="q-text">Écrire la classe <strong>Autocar</strong> (hérite de Transport) avec attributs supplémentaires (<code>marque</code>, <code>prixTicket</code>) et son constructeur.</div>
       </div>
       <div class="q-item" onclick="goTo(4)">
         <div class="q-num">Q5 <span class="pts">2 pts</span></div>
@@ -93,23 +135,23 @@
       </div>
       <div class="q-item" onclick="goTo(6)">
         <div class="q-num">Q7 <span class="pts">2 pts</span></div>
-        <div class="q-text">Créer un <strong>objet Autocar</strong> et afficher ses informations + montant total si toutes les places sont occupées.</div>
+        <div class="q-text">Créer un <strong>objet Autocar</strong> et afficher ses informations + montant total.</div>
       </div>
     </div>
 
     <div id="tab-pr" style="display:none">
-      <div class="part-title">Partie pratique — <span>Site Web PHP Dynamique</span></div>
+      <div class="part-title">Pratique — <span>Site Web PHP Dynamique</span></div>
       <div class="q-item" onclick="goTo(7)">
         <div class="q-num">Q1 <span class="pts">2 pts</span></div>
         <div class="q-text">Fichier <strong>conxDB.php</strong> : connexion à la base de données avec PDO.</div>
       </div>
       <div class="q-item" onclick="goTo(8)">
         <div class="q-num">Q2 <span class="pts">3+2 pts</span></div>
-        <div class="q-text">Page <strong>connEmp.php</strong> : formulaire de connexion (user + pwd) + protection des pages si non authentifié.</div>
+        <div class="q-text">Page <strong>connEmp.php</strong> : formulaire de connexion (user + pwd) + protection des pages.</div>
       </div>
       <div class="q-item" onclick="goTo(9)">
         <div class="q-num">Q3 <span class="pts">2 pts</span></div>
-        <div class="q-text">Fichier <strong>navbar.php</strong> : menu de navigation (S'inscrire, Liste de Voyages, Se déconnecter) + nom/fonction employé.</div>
+        <div class="q-text">Fichier <strong>navbar.php</strong> : menu de navigation + nom/fonction employé connecté.</div>
       </div>
       <div class="q-item" onclick="goTo(10)">
         <div class="q-num">Q4 <span class="pts">2+2+3 pts</span></div>
@@ -117,115 +159,49 @@
       </div>
       <div class="q-item" onclick="goTo(11)">
         <div class="q-num">Q5 <span class="pts">4 pts</span></div>
-        <div class="q-text">Page <strong>listeIns.php</strong> : tableau des inscriptions de l'employé, filtrable par date (code, date, nbre personnes, total).</div>
+        <div class="q-text">Page <strong>listeIns.php</strong> : tableau des inscriptions de l'employé, filtrable par date + total à payer.</div>
       </div>
       <div class="q-item" onclick="goTo(12)">
         <div class="q-num">Q6 <span class="pts">4 pts</span></div>
-        <div class="q-text">Page <strong>detailInsc.php</strong> : date, ville départ/arrivée, heure départ et <strong>heure d'arrivée calculée</strong>.</div>
+        <div class="q-text">Page <strong>detailInsc.php</strong> : date, villes, heure départ et <strong>heure d'arrivée calculée</strong>.</div>
       </div>
       <div class="q-item" onclick="goTo(13)">
         <div class="q-num">Q7 <span class="pts">2 pts</span></div>
-        <div class="q-text">Page <strong>deconnexion.php</strong> : détruire la session et rediriger vers la connexion.</div>
+        <div class="q-text">Page <strong>deconnexion.php</strong> : détruire la session et rediriger.</div>
       </div>
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <div class="panel" id="right-panel">
-
-    <!-- Les blocs de code sont injectés par JS pour éviter le parsing HTML -->
-    <div class="ans-block" id="ans-0">
-      <div class="ans-header"><span class="ans-label">✦ Q1 — Classe abstraite Transport</span><span class="ans-q">attributs + constructeur</span></div>
-      <pre><code class="language-php" id="code-0"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> Le mot-clé <code>abstract</code> empêche l'instanciation directe. On utilise <code>protected</code> pour que les sous-classes (Autocar) accèdent aux attributs.</div>
-    </div>
-
-    <div class="ans-block" id="ans-1">
-      <div class="ans-header"><span class="ans-label">✦ Q2 — Méthode infos()</span><span class="ans-q">ajoutée dans Transport</span></div>
-      <pre><code class="language-php" id="code-1"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> Cette méthode sera <strong>redéfinie</strong> dans Autocar. On utilisera <code>parent::infos()</code> pour réutiliser ces lignes sans les réécrire.</div>
-    </div>
-
-    <div class="ans-block" id="ans-2">
-      <div class="ans-header"><span class="ans-label">✦ Q3 — Méthode abstraite montant()</span><span class="ans-q">ajoutée dans Transport</span></div>
-      <pre><code class="language-php" id="code-2"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> Une méthode <code>abstract</code> n'a pas de corps <code>{}</code>. Elle <strong>force</strong> toutes les sous-classes à l'implémenter, sinon PHP génère une erreur fatale.</div>
-    </div>
-
-    <div class="ans-block" id="ans-3">
-      <div class="ans-header"><span class="ans-label">✦ Q4 — Classe Autocar</span><span class="ans-q">héritage + constructeur complet</span></div>
-      <pre><code class="language-php" id="code-3"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> <code>extends</code> = héritage. <code>parent::__construct()</code> appelle le constructeur de Transport pour initialiser <code>idTrans</code>, <code>vitesse</code>, <code>capacite</code>.</div>
-    </div>
-
-    <div class="ans-block" id="ans-4">
-      <div class="ans-header"><span class="ans-label">✦ Q5 — Redéfinir infos()</span><span class="ans-q">dans Autocar avec parent::infos()</span></div>
-      <pre><code class="language-php" id="code-4"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> <code>parent::infos()</code> réutilise le code déjà écrit dans Transport. C'est le principe de <strong>réutilisabilité</strong> en OOP.</div>
-    </div>
-
-    <div class="ans-block" id="ans-5">
-      <div class="ans-header"><span class="ans-label">✦ Q6 — Implémenter montant()</span><span class="ans-q">dans Autocar</span></div>
-      <pre><code class="language-php" id="code-5"></code></pre>
-      <div class="note"><strong>💡 Formule :</strong> <code>capacite × prixTicket</code> → ex: 50 places × 150 DH = <strong>7500 DH</strong>.</div>
-    </div>
-
-    <div class="ans-block" id="ans-6">
-      <div class="ans-header"><span class="ans-label">✦ Q7 — Objet Autocar complet</span><span class="ans-q">instanciation + affichage</span></div>
-      <pre><code class="language-php" id="code-6"></code></pre>
-    </div>
-
-    <div class="ans-block" id="ans-7">
-      <div class="ans-header"><span class="ans-label">✦ Q1 — conxDB.php</span><span class="ans-q">connexion PDO</span></div>
-      <pre><code class="language-php" id="code-7"></code></pre>
-      <div class="note"><strong>💡 Rappel :</strong> Ce fichier est inclus dans toutes les pages avec <code>include 'conxDB.php';</code>. La variable <code>$cnx</code> sera disponible dans la page qui l'inclut.</div>
-    </div>
-
-    <div class="ans-block" id="ans-8">
-      <div class="ans-header"><span class="ans-label">✦ Q2 — connEmp.php</span><span class="ans-q">connexion + protection des pages</span></div>
-      <pre><code class="language-php" id="code-8"></code></pre>
-      <div class="note"><strong>💡 Protection :</strong> Mettre ce bloc en haut de chaque page protégée :<br><code>session_start(); if (!isset($_SESSION['emp'])) { header("Location: connEmp.php"); exit(); }</code></div>
-    </div>
-
-    <div class="ans-block" id="ans-9">
-      <div class="ans-header"><span class="ans-label">✦ Q3 — navbar.php</span><span class="ans-q">menu commun + vérif session</span></div>
-      <pre><code class="language-php" id="code-9"></code></pre>
-      <div class="note"><strong>💡 Utilisation :</strong> Dans chaque page protégée, mettre <code>include 'navbar.php';</code> en haut — cela affiche le menu ET vérifie la session en même temps.</div>
-    </div>
-
-    <div class="ans-block" id="ans-10">
-      <div class="ans-header"><span class="ans-label">✦ Q4 — Sinscrire.php</span><span class="ans-q">formulaire + listes BD + enregistrement</span></div>
-      <pre><code class="language-php" id="code-10"></code></pre>
-    </div>
-
-    <div class="ans-block" id="ans-11">
-      <div class="ans-header"><span class="ans-label">✦ Q5 — listeIns.php</span><span class="ans-q">tableau inscriptions + filtre date + total</span></div>
-      <pre><code class="language-php" id="code-11"></code></pre>
-      <div class="note"><strong>💡 Formule SQL :</strong> <code>(i.nbrePers * v.prixTicket) AS totalAPayer</code> — le calcul se fait directement dans la requête SQL.</div>
-    </div>
-
-    <div class="ans-block" id="ans-12">
-      <div class="ans-header"><span class="ans-label">✦ Q6 — detailInsc.php</span><span class="ans-q">détail + heure arrivée calculée</span></div>
-      <pre><code class="language-php" id="code-12"></code></pre>
-      <div class="note"><strong>💡 Calcul heure arrivée :</strong> <code>duree</code> est en heures → ×3600 = secondes → <code>SEC_TO_TIME()</code> convertit en TIME → <code>ADDTIME()</code> l'ajoute à <code>heureDepart</code>.</div>
-    </div>
-
-    <div class="ans-block" id="ans-13">
-      <div class="ans-header"><span class="ans-label">✦ Q7 — deconnexion.php</span><span class="ans-q">détruire session + redirection</span></div>
-      <pre><code class="language-php" id="code-13"></code></pre>
-      <div class="note"><strong>💡 Différence :</strong> <code>session_unset()</code> vide le tableau <code>$_SESSION</code>. <code>session_destroy()</code> supprime le fichier de session sur le serveur. Les deux ensemble = déconnexion complète.</div>
-    </div>
-
+  <div class="right-panel" id="right-panel">
+    <div class="ans-block" id="ans-0"><div class="ans-header"><span class="ans-label">✦ Q1 — Classe abstraite Transport</span><span class="ans-q">attributs + constructeur</span></div><pre><code class="language-php" id="code-0"></code></pre><div class="note"><strong>💡</strong> <code>abstract</code> empêche l'instanciation directe. <code>protected</code> permet aux sous-classes d'accéder aux attributs.</div></div>
+    <div class="ans-block" id="ans-1"><div class="ans-header"><span class="ans-label">✦ Q2 — Méthode infos()</span><span class="ans-q">dans Transport</span></div><pre><code class="language-php" id="code-1"></code></pre><div class="note"><strong>💡</strong> Cette méthode sera redéfinie dans Autocar. On utilisera <code>parent::infos()</code> pour réutiliser ces 3 lignes.</div></div>
+    <div class="ans-block" id="ans-2"><div class="ans-header"><span class="ans-label">✦ Q3 — Méthode abstraite montant()</span><span class="ans-q">dans Transport</span></div><pre><code class="language-php" id="code-2"></code></pre><div class="note"><strong>💡</strong> Méthode <code>abstract</code> = pas de corps <code>{}</code>. Toutes les sous-classes sont <strong>obligées</strong> de l'implémenter.</div></div>
+    <div class="ans-block" id="ans-3"><div class="ans-header"><span class="ans-label">✦ Q4 — Classe Autocar</span><span class="ans-q">héritage + constructeur</span></div><pre><code class="language-php" id="code-3"></code></pre><div class="note"><strong>💡</strong> <code>extends</code> = héritage. <code>parent::__construct()</code> initialise les attributs de Transport.</div></div>
+    <div class="ans-block" id="ans-4"><div class="ans-header"><span class="ans-label">✦ Q5 — Redéfinir infos()</span><span class="ans-q">dans Autocar</span></div><pre><code class="language-php" id="code-4"></code></pre><div class="note"><strong>💡</strong> <code>parent::infos()</code> réutilise le code de Transport = principe de <strong>réutilisabilité</strong>.</div></div>
+    <div class="ans-block" id="ans-5"><div class="ans-header"><span class="ans-label">✦ Q6 — Implémenter montant()</span><span class="ans-q">dans Autocar</span></div><pre><code class="language-php" id="code-5"></code></pre><div class="note"><strong>💡 Formule :</strong> <code>capacite × prixTicket</code> → 50 × 150 = <strong>7500 DH</strong>.</div></div>
+    <div class="ans-block" id="ans-6"><div class="ans-header"><span class="ans-label">✦ Q7 — Code complet + objet Autocar</span><span class="ans-q">instanciation + affichage</span></div><pre><code class="language-php" id="code-6"></code></pre></div>
+    <div class="ans-block" id="ans-7"><div class="ans-header"><span class="ans-label">✦ Q1 — conxDB.php</span><span class="ans-q">connexion PDO</span></div><pre><code class="language-php" id="code-7"></code></pre><div class="note"><strong>💡</strong> Inclure dans toutes les pages avec <code>include 'conxDB.php';</code>. La variable <code>$cnx</code> sera disponible dans la page.</div></div>
+    <div class="ans-block" id="ans-8"><div class="ans-header"><span class="ans-label">✦ Q2 — connEmp.php</span><span class="ans-q">connexion + protection</span></div><pre><code class="language-php" id="code-8"></code></pre><div class="note"><strong>💡 Protection page :</strong> <code>session_start(); if (!isset($_SESSION['emp'])) { header("Location: connEmp.php"); exit(); }</code></div></div>
+    <div class="ans-block" id="ans-9"><div class="ans-header"><span class="ans-label">✦ Q3 — navbar.php</span><span class="ans-q">menu commun + vérif session</span></div><pre><code class="language-php" id="code-9"></code></pre><div class="note"><strong>💡</strong> Dans chaque page protégée : <code>include 'navbar.php';</code> — affiche le menu ET vérifie la session.</div></div>
+    <div class="ans-block" id="ans-10"><div class="ans-header"><span class="ans-label">✦ Q4 — Sinscrire.php</span><span class="ans-q">formulaire + listes BD + enregistrement</span></div><pre><code class="language-php" id="code-10"></code></pre></div>
+    <div class="ans-block" id="ans-11"><div class="ans-header"><span class="ans-label">✦ Q5 — listeIns.php</span><span class="ans-q">tableau + filtre date + total</span></div><pre><code class="language-php" id="code-11"></code></pre><div class="note"><strong>💡 SQL :</strong> <code>(i.nbrePers * v.prixTicket) AS totalAPayer</code> — calcul directement dans la requête.</div></div>
+    <div class="ans-block" id="ans-12"><div class="ans-header"><span class="ans-label">✦ Q6 — detailInsc.php</span><span class="ans-q">détail + heure arrivée calculée</span></div><pre><code class="language-php" id="code-12"></code></pre><div class="note"><strong>💡</strong> <code>ADDTIME(heureDepart, SEC_TO_TIME(duree*3600))</code> — convertit la durée en secondes puis l'ajoute à l'heure de départ.</div></div>
+    <div class="ans-block" id="ans-13"><div class="ans-header"><span class="ans-label">✦ Q7 — deconnexion.php</span><span class="ans-q">détruire session</span></div><pre><code class="language-php" id="code-13"></code></pre><div class="note"><strong>💡</strong> <code>session_unset()</code> vide les variables, <code>session_destroy()</code> supprime la session serveur. <code>exit()</code> obligatoire après <code>header()</code>.</div></div>
   </div>
-</main>
+</div>
 
-<div class="scroll-hint" id="scrollHint">↕ Réponse affichée</div>
+<!-- ════════════ MOBILE ════════════ -->
+<div class="mobile-main" id="mobile-main">
+  <div id="mob-tab-th"></div>
+  <div id="mob-tab-pr" style="display:none"></div>
+</div>
+
+<div class="scroll-hint" id="scrollHint">✓ Réponse affichée</div>
 
 <script>
-// Tous les codes sont stockés en JS (évite le parsing HTML du navigateur)
 const codes = [
-// 0 - Q1 Théo
 `<?php
 abstract class Transport {
 
@@ -242,8 +218,6 @@ abstract class Transport {
     }
 }
 ?>`,
-
-// 1 - Q2 Théo
 `<?php
 abstract class Transport {
 
@@ -265,8 +239,6 @@ abstract class Transport {
     }
 }
 ?>`,
-
-// 2 - Q3 Théo
 `<?php
 abstract class Transport {
 
@@ -286,27 +258,22 @@ abstract class Transport {
         echo "Capacité     : " . $this->capacite . " places<br>";
     }
 
-    // Méthode abstraite : PAS de corps ici {}
-    // Chaque sous-classe DOIT l'implémenter obligatoirement
+    // Méthode abstraite : PAS de corps {}
+    // La sous-classe DOIT l'implémenter
     abstract public function montant();
 }
 ?>`,
-
-// 3 - Q4 Théo
 `<?php
 class Autocar extends Transport {
 
-    // Attributs supplémentaires propres à Autocar
     private $marque;
     private $prixTicket;
 
-    // Constructeur : reçoit TOUS les attributs (parent + enfant)
     public function __construct($idTrans, $vitesse, $capacite,
                                 $marque, $prixTicket) {
         // Appel du constructeur parent
         parent::__construct($idTrans, $vitesse, $capacite);
 
-        // Initialiser les attributs propres à Autocar
         $this->marque     = $marque;
         $this->prixTicket = $prixTicket;
     }
@@ -315,28 +282,22 @@ class Autocar extends Transport {
     public function montant() { }
 }
 ?>`,
-
-// 4 - Q5 Théo
 `// Dans la classe Autocar
 public function infos() {
-    // Appelle infos() de Transport → affiche idTrans, vitesse, capacite
+    // Réutilise l'affichage de Transport
     parent::infos();
 
     // Ajoute les infos spécifiques à Autocar
     echo "Marque      : " . $this->marque     . "<br>";
     echo "Prix ticket : " . $this->prixTicket . " DH<br>";
 }`,
-
-// 5 - Q6 Théo
 `// Dans la classe Autocar
 public function montant() {
-    // Montant total = nombre de places × prix par ticket
+    // Montant total = capacite × prix par ticket
     return $this->capacite * $this->prixTicket;
 }`,
-
-// 6 - Q7 Théo
 `<?php
-// -------- Classe abstraite Transport --------
+// ─── Classe abstraite Transport ───
 abstract class Transport {
     protected $idTrans;
     protected $vitesse;
@@ -355,7 +316,7 @@ abstract class Transport {
     abstract public function montant();
 }
 
-// -------- Classe Autocar --------
+// ─── Classe Autocar ───
 class Autocar extends Transport {
     private $marque;
     private $prixTicket;
@@ -376,14 +337,13 @@ class Autocar extends Transport {
     }
 }
 
-// -------- Création de l'objet et affichage --------
+// ─── Création objet + affichage ───
 $autocar = new Autocar(1, 120, 50, "Mercedes", 150);
-
 echo "=== Informations de l'Autocar ===<br>";
 $autocar->infos();
 echo "Montant total : " . $autocar->montant() . " DH<br>";
 
-// Résultat affiché :
+// Résultat :
 // ID Transport : 1
 // Vitesse      : 120 km/h
 // Capacité     : 50 places
@@ -391,10 +351,8 @@ echo "Montant total : " . $autocar->montant() . " DH<br>";
 // Prix ticket  : 150 DH
 // Montant total : 7500 DH
 ?>`,
-
-// 7 - Q1 Pratique
 `<?php
-// conxDB.php — Connexion à la base de données
+// conxDB.php
 $host     = "localhost";
 $dbname   = "agence";
 $user     = "root";
@@ -411,14 +369,12 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 ?>`,
-
-// 8 - Q2 Pratique
 `<?php
-// connEmp.php — Page de connexion
+// connEmp.php
 session_start();
 include 'conxDB.php';
 
-// Si déjà connecté → rediriger directement
+// Si déjà connecté → rediriger
 if (isset($_SESSION['emp'])) {
     header("Location: Sinscrire.php");
     exit();
@@ -430,7 +386,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = $_POST['user'];
     $pwd  = $_POST['pwd'];
 
-    // Requête préparée (sécurité anti-injection SQL)
     $stmt = $cnx->prepare(
         "SELECT * FROM Employe WHERE user = ? AND pwd = ?"
     );
@@ -438,7 +393,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $emp = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($emp) {
-        $_SESSION['emp'] = $emp;   // Stocker l'employé en session
+        $_SESSION['emp'] = $emp;
         header("Location: Sinscrire.php");
         exit();
     } else {
@@ -461,16 +416,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </form>
 </body>
 </html>`,
-
-// 9 - Q3 Pratique
 `<?php
-// navbar.php — Menu commun à toutes les pages protégées
-
+// navbar.php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Vérification : l'employé est-il connecté ?
 if (!isset($_SESSION['emp'])) {
     header("Location: connEmp.php");
     exit();
@@ -479,45 +430,38 @@ if (!isset($_SESSION['emp'])) {
 $emp = $_SESSION['emp'];
 ?>
 <nav style="background:#1a1a2e; padding:12px 20px; color:white;
-            display:flex; justify-content:space-between;">
-
-    <!-- Nom et fonction de l'employé connecté -->
+            display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
     <span>
         👤 <strong><?php echo htmlspecialchars($emp['nom']); ?></strong>
         — <?php echo htmlspecialchars($emp['fonction']); ?>
     </span>
-
-    <!-- Liens du menu -->
     <span>
-        <a href="Sinscrire.php"   style="color:#adf;margin-right:15px">S'inscrire</a>
-        <a href="listeIns.php"    style="color:#adf;margin-right:15px">Liste de Voyages</a>
+        <a href="Sinscrire.php"   style="color:#adf;margin-right:12px">S'inscrire</a>
+        <a href="listeIns.php"    style="color:#adf;margin-right:12px">Liste de Voyages</a>
         <a href="deconnexion.php" style="color:#f88">Se déconnecter</a>
     </span>
 </nav>`,
-
-// 10 - Q4 Pratique
 `<?php
 // Sinscrire.php
-include 'navbar.php';   // vérifie session + affiche menu
+include 'navbar.php';
 include 'conxDB.php';
 
 $message = "";
 
-// --- b. Remplir les listes déroulantes depuis la BD ---
+// b. Listes déroulantes depuis la BD
 $stmtD   = $cnx->query("SELECT DISTINCT villeD FROM DescriptionVoyage");
 $villesD = $stmtD->fetchAll(PDO::FETCH_ASSOC);
 
 $stmtA   = $cnx->query("SELECT DISTINCT villeA FROM DescriptionVoyage");
 $villesA = $stmtA->fetchAll(PDO::FETCH_ASSOC);
 
-// --- c. Traitement du formulaire (enregistrement) ---
+// c. Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $villeD   = $_POST['villeD'];
     $villeA   = $_POST['villeA'];
     $dateVoy  = $_POST['dateVoy'];
     $nbrePers = $_POST['nbrePers'];
 
-    // Trouver le codeVoyage correspondant aux villes choisies
     $stmt = $cnx->prepare(
         "SELECT v.codeVoyage
          FROM Voyage v
@@ -553,24 +497,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <?php if ($message) echo "<p>$message</p>"; ?>
 
   <form method="post" action="Sinscrire.php">
-
-    <!-- b. Ville départ : liste déroulante depuis BD -->
     <label>Ville de départ :</label>
     <select name="villeD">
       <?php foreach ($villesD as $v): ?>
-        <option value="<?php echo $v['villeD']; ?>">
-          <?php echo $v['villeD']; ?>
-        </option>
+        <option value="<?php echo $v['villeD']; ?>"><?php echo $v['villeD']; ?></option>
       <?php endforeach; ?>
     </select><br><br>
 
-    <!-- b. Ville arrivée : liste déroulante depuis BD -->
     <label>Ville d'arrivée :</label>
     <select name="villeA">
       <?php foreach ($villesA as $v): ?>
-        <option value="<?php echo $v['villeA']; ?>">
-          <?php echo $v['villeA']; ?>
-        </option>
+        <option value="<?php echo $v['villeA']; ?>"><?php echo $v['villeA']; ?></option>
       <?php endforeach; ?>
     </select><br><br>
 
@@ -580,13 +517,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <label>Nombre de personnes :</label>
     <input type="number" name="nbrePers" min="1" required><br><br>
 
-    <!-- c. Bouton enregistrer -->
     <button type="submit">Enregistrer l'inscription</button>
   </form>
 </body>
 </html>`,
-
-// 11 - Q5 Pratique
 `<?php
 // listeIns.php
 include 'navbar.php';
@@ -595,7 +529,6 @@ include 'conxDB.php';
 $codeEmp = $_SESSION['emp']['codeEmp'];
 $filtre  = isset($_GET['dateVoy']) ? $_GET['dateVoy'] : '';
 
-// totalAPayer = nbrePers × prixTicket (calculé directement en SQL)
 $sql = "SELECT i.codeInsc,
                i.dateVoy,
                i.nbrePers,
@@ -606,7 +539,6 @@ $sql = "SELECT i.codeInsc,
 
 $params = [$codeEmp];
 
-// Ajouter filtre par date si fourni
 if ($filtre != '') {
     $sql     .= " AND i.dateVoy = ?";
     $params[] = $filtre;
@@ -622,7 +554,6 @@ $inscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
   <h2>Mes Inscriptions</h2>
 
-  <!-- Formulaire filtre par date -->
   <form method="get" action="listeIns.php">
     <label>Filtrer par date :</label>
     <input type="date" name="dateVoy" value="<?php echo $filtre; ?>">
@@ -632,11 +563,8 @@ $inscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <table border="1" cellpadding="8">
     <tr>
-      <th>Code Inscription</th>
-      <th>Date Voyage</th>
-      <th>Nb Personnes</th>
-      <th>Total à Payer</th>
-      <th>Action</th>
+      <th>Code</th><th>Date Voyage</th>
+      <th>Nb Pers.</th><th>Total (DH)</th><th>Action</th>
     </tr>
     <?php if (count($inscriptions) == 0): ?>
       <tr><td colspan="5">Aucune inscription trouvée.</td></tr>
@@ -646,17 +574,13 @@ $inscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <td><?php echo $i['codeInsc'];    ?></td>
       <td><?php echo $i['dateVoy'];     ?></td>
       <td><?php echo $i['nbrePers'];    ?></td>
-      <td><?php echo $i['totalAPayer']; ?> DH</td>
-      <td>
-        <a href="detailInsc.php?id=<?php echo $i['codeInsc']; ?>">Afficher</a>
-      </td>
+      <td><?php echo $i['totalAPayer']; ?></td>
+      <td><a href="detailInsc.php?id=<?php echo $i['codeInsc']; ?>">Afficher</a></td>
     </tr>
     <?php endforeach; ?>
   </table>
 </body>
 </html>`,
-
-// 12 - Q6 Pratique
 `<?php
 // detailInsc.php
 include 'navbar.php';
@@ -664,8 +588,6 @@ include 'conxDB.php';
 
 $id = $_GET['id'];
 
-// ADDTIME(heureDepart, SEC_TO_TIME(duree * 3600))
-// duree en heures × 3600 = secondes → SEC_TO_TIME → format TIME
 $stmt = $cnx->prepare(
     "SELECT
         i.dateVoy,
@@ -691,72 +613,143 @@ if (!$detail) {
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"><title>Détail Inscription</title></head>
+<head><meta charset="UTF-8"><title>Détail</title></head>
 <body>
   <h2>Détail de l'Inscription</h2>
-
   <table border="1" cellpadding="10">
-    <tr>
-      <th>Date de voyage</th>
-      <td><?php echo $detail['dateVoy']; ?></td>
-    </tr>
-    <tr>
-      <th>Ville de départ</th>
-      <td><?php echo htmlspecialchars($detail['villeD']); ?></td>
-    </tr>
-    <tr>
-      <th>Ville d'arrivée</th>
-      <td><?php echo htmlspecialchars($detail['villeA']); ?></td>
-    </tr>
-    <tr>
-      <th>Heure de départ</th>
-      <td><?php echo $detail['heureDepart']; ?></td>
-    </tr>
-    <tr>
-      <th>Heure d'arrivée</th>
-      <td><?php echo $detail['heureArrivee']; ?>
-        (durée : <?php echo $detail['duree']; ?>h)
-      </td>
-    </tr>
+    <tr><th>Date de voyage</th>
+        <td><?php echo $detail['dateVoy']; ?></td></tr>
+    <tr><th>Ville de départ</th>
+        <td><?php echo htmlspecialchars($detail['villeD']); ?></td></tr>
+    <tr><th>Ville d'arrivée</th>
+        <td><?php echo htmlspecialchars($detail['villeA']); ?></td></tr>
+    <tr><th>Heure de départ</th>
+        <td><?php echo $detail['heureDepart']; ?></td></tr>
+    <tr><th>Heure d'arrivée</th>
+        <td><?php echo $detail['heureArrivee']; ?>
+            (durée : <?php echo $detail['duree']; ?>h)</td></tr>
   </table><br>
-
   <a href="listeIns.php">← Retour à la liste</a>
 </body>
 </html>`,
-
-// 13 - Q7 Pratique
 `<?php
 // deconnexion.php
-session_start();    // Démarrer la session pour pouvoir la manipuler
+session_start();
 
-session_unset();    // Vider toutes les variables de session
+session_unset();    // Vider les variables de session
 session_destroy();  // Détruire la session côté serveur
 
-// Rediriger vers la page de connexion
 header("Location: connEmp.php");
 exit();             // Toujours mettre exit() après header()
 ?>`
 ];
 
-// Injecter les codes comme texte brut (pas HTML) dans chaque bloc
+// ── Données questions ──
+const questions = [
+  { q:"Q1", pts:"2 pts", text:"Écrire la <strong>classe abstraite Transport</strong> avec ses attributs (<code>idTrans</code>, <code>vitesse</code>, <code>capacite</code>) et un constructeur.", note:"<strong>💡</strong> <code>abstract</code> empêche l'instanciation directe. <code>protected</code> permet aux sous-classes d'accéder aux attributs." },
+  { q:"Q2", pts:"2 pts", text:"Ajouter la méthode <strong>infos()</strong> qui affiche les informations du transport.", note:"<strong>💡</strong> Sera redéfinie dans Autocar. On utilisera <code>parent::infos()</code> pour réutiliser ce code." },
+  { q:"Q3", pts:"2 pts", text:"Ajouter la méthode abstraite <strong>montant()</strong> qui retourne le montant si toutes les places sont occupées.", note:"<strong>💡</strong> Méthode <code>abstract</code> = pas de corps. Oblige toutes les sous-classes à l'implémenter." },
+  { q:"Q4", pts:"2 pts", text:"Écrire la classe <strong>Autocar</strong> (hérite de Transport) avec attributs (<code>marque</code>, <code>prixTicket</code>) et constructeur.", note:"<strong>💡</strong> <code>extends</code> = héritage. <code>parent::__construct()</code> initialise les attributs de Transport." },
+  { q:"Q5", pts:"2 pts", text:"Redéfinir <strong>infos()</strong> dans Autocar pour afficher toutes les informations.", note:"<strong>💡</strong> <code>parent::infos()</code> réutilise le code de Transport = principe de réutilisabilité." },
+  { q:"Q6", pts:"2 pts", text:"Implémenter <strong>montant()</strong> dans Autocar : retourne le montant si tous les tickets sont vendus.", note:"<strong>💡 Formule :</strong> <code>capacite × prixTicket</code> → 50 × 150 = <strong>7500 DH</strong>." },
+  { q:"Q7", pts:"2 pts", text:"Créer un <strong>objet Autocar</strong> et afficher ses informations + montant total.", note:null },
+  { q:"Q1", pts:"2 pts", text:"Fichier <strong>conxDB.php</strong> : connexion à la base de données avec PDO.", note:"<strong>💡</strong> Inclure dans toutes les pages avec <code>include 'conxDB.php';</code>." },
+  { q:"Q2", pts:"3+2 pts", text:"Page <strong>connEmp.php</strong> : formulaire de connexion (user + pwd) + protection des pages si non authentifié.", note:"<strong>💡 Protection :</strong> <code>session_start(); if (!isset($_SESSION['emp'])) { header('Location: connEmp.php'); exit(); }</code>" },
+  { q:"Q3", pts:"2 pts", text:"Fichier <strong>navbar.php</strong> : menu de navigation + nom/fonction de l'employé connecté.", note:"<strong>💡</strong> <code>include 'navbar.php';</code> affiche le menu ET vérifie la session." },
+  { q:"Q4", pts:"2+2+3 pts", text:"Page <strong>Sinscrire.php</strong> : formulaire d'inscription (villes depuis BD, date, nbre personnes) + enregistrement.", note:null },
+  { q:"Q5", pts:"4 pts", text:"Page <strong>listeIns.php</strong> : tableau des inscriptions filtrable par date + total à payer.", note:"<strong>💡 SQL :</strong> <code>(i.nbrePers * v.prixTicket) AS totalAPayer</code>" },
+  { q:"Q6", pts:"4 pts", text:"Page <strong>detailInsc.php</strong> : date, villes, heure départ et <strong>heure d'arrivée calculée</strong>.", note:"<strong>💡</strong> <code>ADDTIME(heureDepart, SEC_TO_TIME(duree*3600))</code>" },
+  { q:"Q7", pts:"2 pts", text:"Page <strong>deconnexion.php</strong> : détruire la session et rediriger.", note:"<strong>💡</strong> <code>session_unset()</code> vide les variables, <code>session_destroy()</code> supprime la session serveur." }
+];
+
+// ── Inject desktop codes ──
 codes.forEach((code, i) => {
   const el = document.getElementById('code-' + i);
-  if (el) {
-    el.textContent = code;
-    hljs.highlightElement(el);
-  }
+  if (el) { el.textContent = code; hljs.highlightElement(el); }
 });
 
+// ── Build mobile accordion ──
+function buildMobile(tab, start, end) {
+  const container = document.getElementById('mob-tab-' + tab);
+  container.innerHTML = '';
+  const title = document.createElement('div');
+  title.className = 'part-title';
+  title.innerHTML = tab === 'th'
+    ? 'Théorique — <span>Transport &amp; Autocar</span>'
+    : 'Pratique — <span>Site Web PHP Dynamique</span>';
+  container.appendChild(title);
+
+  for (let i = start; i <= end; i++) {
+    const d = questions[i];
+    const wrap = document.createElement('div');
+    wrap.className = 'mob-q-item';
+    wrap.id = 'mob-item-' + i;
+
+    const noteHtml = d.note
+      ? `<div class="note">${d.note}</div>`
+      : '';
+
+    const codeEl = document.createElement('code');
+    codeEl.className = 'language-php';
+    codeEl.textContent = codes[i];
+
+    wrap.innerHTML = `
+      <button class="mob-q-btn" onclick="toggleMob(${i})">
+        <div class="mob-q-left">
+          <div class="mob-q-num">${d.q} <span class="pts">${d.pts}</span></div>
+          <div class="mob-q-text">${d.text}</div>
+        </div>
+        <span class="mob-chevron">▼</span>
+      </button>
+      <div class="mob-answer">
+        <div class="ans-header" style="border-top:1px solid var(--border)">
+          <span class="ans-label">✦ Réponse ${d.q}</span>
+        </div>
+        <pre id="mob-pre-${i}"><code class="language-php" id="mob-code-${i}"></code></pre>
+        ${noteHtml}
+      </div>`;
+    container.appendChild(wrap);
+
+    // inject code after DOM insert
+    setTimeout(() => {
+      const el = document.getElementById('mob-code-' + i);
+      if (el) { el.textContent = codes[i]; hljs.highlightElement(el); }
+    }, 0);
+  }
+}
+
+buildMobile('th', 0, 6);
+buildMobile('pr', 7, 13);
+
+function toggleMob(idx) {
+  const item = document.getElementById('mob-item-' + idx);
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    // Scroll to it
+    setTimeout(() => {
+      item.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+// ── Desktop logic ──
 let activeTab = 'th';
 
 function switchTab(tab, el) {
   activeTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
+  // Desktop
   document.getElementById('tab-th').style.display = tab === 'th' ? '' : 'none';
   document.getElementById('tab-pr').style.display = tab === 'pr' ? '' : 'none';
   document.querySelectorAll('.q-item').forEach(q => q.classList.remove('active'));
   document.querySelectorAll('.ans-block').forEach(a => a.classList.remove('highlighted'));
+  // Mobile
+  document.getElementById('mob-tab-th').style.display = tab === 'th' ? '' : 'none';
+  document.getElementById('mob-tab-pr').style.display = tab === 'pr' ? '' : 'none';
+  // Close all mobile accordions
+  document.querySelectorAll('.mob-q-item').forEach(m => m.classList.remove('open'));
 }
 
 function goTo(idx) {
