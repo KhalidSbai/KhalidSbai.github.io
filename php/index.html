@@ -664,7 +664,7 @@ exit();
 ?>`
 ];
 
-// Questions pour mobile (texte exact de l'énoncé)
+// Questions pour mobile — identiques à l'énoncé desktop
 const questions = [
   { q:"Question 1", pts:"2 pts",
     text:"Écrire la classe abstraite <strong>Transport</strong> avec ses attributs et un constructeur avec paramètres.",
@@ -691,19 +691,19 @@ const questions = [
     text:"Écrire le code PHP du fichier <strong>conxDB.php</strong> permettant de se connecter à la base de données.",
     note:"<strong>💡</strong> Inclure dans toutes les pages avec <code>include 'conxDB.php';</code>." },
   { q:"Question 2", pts:"3 + 2 pts",
-    text:"Créer la page <strong>connEmp.php</strong> permettant à un employé de se connecter en saisissant son <em>user</em> et <em>pwd</em>. <strong>(3pts)</strong><br>— Les pages suivantes ne s'affichent qu'après authentification. Sinon, l'employé sera redirigé à la page de connexion. <strong>(2pts)</strong>",
+    text:"Créer la page <strong>connEmp.php</strong> permettant à un employé de se connecter en saisissant son <em>user</em> et <em>pwd</em>. <strong>(3pts)</strong><br>— Les pages des questions suivantes ne s'affichent qu'après authentification. Sinon, l'employé sera redirigé à la page de connexion. <strong>(2pts)</strong>",
     note:"<strong>💡 Protection :</strong> <code>session_start(); if (!isset($_SESSION['emp'])) { header('Location: connEmp.php'); exit(); }</code>" },
   { q:"Question 3", pts:"2 pts",
-    text:"Écrire le code permettant d'afficher le menu (<em>« S'inscrire »</em>, <em>« Liste de Voyages »</em>, <em>« Se déconnecter »</em>) qui s'affiche sur toutes les pages en plus du nom et de la fonction de l'employé connecté.",
+    text:"Écrire le code permettant d'afficher le menu (<em>« S'inscrire »</em>, <em>« Liste de Voyages »</em>, <em>« Se déconnecter »</em>) qui s'affiche sur toutes les pages en plus du nom et fonction de l'employé connecté.",
     note:"<strong>💡</strong> <code>include 'navbar.php';</code> affiche le menu ET vérifie la session." },
-  { q:"Question 4", pts:"2+2+3 pts",
-    text:`Créer la page <strong>Sinscrire.php</strong> qui s'ouvre après authentification ou après clic sur « S'inscrire » :<ul><li>a. Création de la page. <strong>(2pts)</strong></li><li>b. Ville départ et ville d'arrivée : deux listes déroulantes remplies depuis la BD. <strong>(2pts)</strong></li><li>c. Prévoir un bouton pour enregistrer l'inscription. <strong>(3pts)</strong></li></ul>`,
+  { q:"Question 4", pts:"2 + 2 + 3 pts",
+    text:"Créer la page <strong>Sinscrire.php</strong> qui s'ouvre après authentification de l'employé ou après clic sur le lien « S'inscrire ». Cette page contient un formulaire permettant d'ajouter une inscription (ville départ, ville d'arrivée, date de voyage, nombre de personnes) :<ul><li>a. Création de la page. <strong>(2pts)</strong></li><li>b. Ville départ et ville d'arrivée : deux listes déroulantes remplies à partir de la base de données. <strong>(2pts)</strong></li><li>c. Prévoir un bouton pour enregistrer l'inscription. <strong>(3pts)</strong></li></ul>",
     note:null },
   { q:"Question 5", pts:"4 pts",
-    text:"Créer la page <strong>listeIns.php</strong> qui affiche dans un tableau toutes les inscriptions du même employé connecté en filtrant par date de voyage (<em>code d'inscription, date de Voyage, nombre de Personnes inscrit, total à payer</em>).",
+    text:"Créer la page <strong>listeIns.php</strong> qui permet d'afficher dans un tableau toutes les inscriptions du même employé connecté en filtrant par date de voyage (<em>code d'inscription, date de Voyage, nombre de Personnes inscrit, total à payer</em>).",
     note:"<strong>💡 SQL :</strong> <code>(i.nbrePers * v.prixTicket) AS totalAPayer</code>" },
   { q:"Question 6", pts:"4 pts",
-    text:"Prévoir un lien <em>« Afficher »</em> (pour chaque ligne du tableau de la question 5) permettant d'afficher sur une autre page : <em>date de Voyage, ville de départ, ville d'arrivée, heure de départ</em> et <strong>heure d'arrivée (à déterminer)</strong>.",
+    text:"Prévoir un lien <em>« Afficher »</em> (pour chaque ligne de table de la question 5) permettant d'afficher sur une autre page les informations suivantes : <em>date de Voyage, ville de départ, ville d'arrivée, heure de départ</em> et <strong>heure d'arrivée (à déterminer)</strong>.",
     note:"<strong>💡</strong> <code>ADDTIME(heureDepart, SEC_TO_TIME(duree*3600))</code>" },
   { q:"Question 7", pts:"2 pts",
     text:"Écrire le code permettant à l'employé de se <strong>déconnecter</strong>.",
@@ -731,9 +731,27 @@ function buildMobile(tab, start, end) {
   const intro = document.createElement('div');
   intro.className = 'part-intro';
   intro.innerHTML = tab === 'th'
-    ? 'On souhaite créer un programme orienté objet en PHP pour gérer les moyens de transport pour une agence de voyage. Un transport est caractérisé par : <strong>idTrans</strong>, <strong>vitesse</strong> et <strong>capacité</strong>.'
-    : 'Gestion des inscriptions aux voyages organisés via un site web dynamique PHP.<br><br><strong>Tables :</strong> Employé, Transport, DescriptionVoyage, Voyage, Inscription.';
+    ? `On souhaite créer un programme orienté objet en PHP pour gérer les moyens de transport (voiture, autocar, ...) pour une agence de voyage. Un transport est caractérisé par : <strong>idTrans</strong>, <strong>vitesse</strong> et <strong>capacité</strong>.`
+    : `Une entreprise souhaite proposer des voyages organisés à ses employés avec leur famille. Pour cela on propose de gérer les inscriptions à ces voyages à travers un site web dynamique réalisé en PHP.<br><br>
+<strong>Modèle relationnel :</strong><br>
+Employé (<u>codeEmp</u>, nom, fonction, user, pwd)<br>
+Transport (<u>codeTrans</u>, type, vitesse, nbrePlace)<br>
+DescriptionVoyage (<u>codeDesc</u>, description, villeD, villeA)<br>
+Voyage (<u>codeVoyage</u>, #codeTrans, #codeDesc, prixTicket, duree, heureDepart)<br>
+Inscription (<u>codeInsc</u>, #codeEmp, #codeVoyage, nbrePers, dateVoy)<br><br>
+<strong>Remarque :</strong> les clés primaires sont automatiques. <strong>nbrePlace</strong> : nombre de places du transport. <strong>prixTicket</strong> : prix de voyage pour une personne. <strong>durée</strong> : durée de voyage en heures. <strong>nbrePers</strong> : nombre de personnes qui accompagnent l'employé (y compris l'employé).`;
   container.appendChild(intro);
+
+  // Séparateur entre Q3 et Q4 pour la partie théorique (info Autocar)
+  if (tab === 'th') {
+    const autocarNote = document.createElement('div');
+    autocarNote.className = 'part-intro';
+    autocarNote.style.cssText = 'margin-top:0;display:none';
+    autocarNote.id = 'mob-autocar-note';
+    autocarNote.innerHTML = `Un autocar est un transport caractérisé en plus par une <strong>marque</strong>, <strong>prix ticket par place</strong>.`;
+    // On l'insèrera après Q3 dynamiquement
+    container._autocarNote = autocarNote;
+  }
 
   for (let i = start; i <= end; i++) {
     const d = questions[i];
@@ -757,6 +775,11 @@ function buildMobile(tab, start, end) {
         ${noteHtml}
       </div>`;
     container.appendChild(wrap);
+    // Insérer la note Autocar entre Q3 (idx=2) et Q4 (idx=3)
+    if (tab === 'th' && i === 2 && container._autocarNote) {
+      container._autocarNote.style.display = '';
+      container.appendChild(container._autocarNote);
+    }
     setTimeout(() => {
       const el = document.getElementById('mob-code-' + i);
       if (el) { el.textContent = codes[i]; hljs.highlightElement(el); }
