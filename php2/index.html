@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Révision PHP – Logger & Formations</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--panel:#161b22;--border:#30363d;--accent:#58a6ff;
+  --text:#c9d1d9;--subtext:#8b949e;
+  --hl-q:#1f3a5f;--hl-q-border:#58a6ff;
+  --hl-a:#1a2f1a;--hl-a-border:#3fb950;--hl-a-glow:#3fb95044;
+}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;flex-shrink:0}
+header h1{font-size:.9rem;font-weight:600;color:var(--accent);flex:1;min-width:160px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{background:#21262d;border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:.7rem;color:var(--subtext)}
+.badge.th{border-color:#58a6ff44;color:#58a6ff}.badge.pr{border-color:#f7816644;color:#f78166}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--panel);flex-shrink:0}
+.tab{flex:1;text-align:center;padding:10px 8px;cursor:pointer;font-size:.8rem;color:var(--subtext);border-bottom:2px solid transparent;transition:.2s;user-select:none}
+.tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* DESKTOP */
+.desktop-main{display:flex;flex:1;min-height:0;overflow:hidden}
+.left-panel,.right-panel{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.left-panel::-webkit-scrollbar,.right-panel::-webkit-scrollbar{width:5px}
+.left-panel::-webkit-scrollbar-thumb,.right-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.divider{width:1px;background:var(--border);flex-shrink:0}
+
+/* MOBILE */
+.mobile-main{display:none;flex-direction:column;flex:1;overflow-y:auto;padding:12px;gap:10px}
+
+.part-title{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--subtext);padding:4px 0 10px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.part-title span{color:var(--accent)}
+.part-intro{font-size:.78rem;color:var(--subtext);line-height:1.6;margin-bottom:12px;padding:10px 12px;background:#161b22;border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--accent)}
+.part-intro code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:.72rem;color:#79c0ff}
+.part-intro ul{margin:6px 0 0 16px}
+.part-intro li{margin-bottom:3px}
+
+.q-item{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:all .2s}
+.q-item:hover{border-color:var(--accent);background:#1c2230}
+.q-item.active{background:var(--hl-q);border-color:var(--hl-q-border);box-shadow:0 0 0 1px #58a6ff22}
+.q-num{font-size:.68rem;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.pts{background:#21262d;border-radius:20px;padding:2px 8px;font-size:.63rem;color:#f0883e}
+.q-text{font-size:.8rem;line-height:1.55;color:var(--text)}
+.q-text ul{margin:5px 0 0 16px}.q-text li{margin-bottom:2px}
+.q-text code{background:#21262d;padding:1px 4px;border-radius:3px;font-size:.73rem;color:#79c0ff}
+.q-item.active .q-text{color:#fff}
+
+.ans-block{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .4s;margin-bottom:14px}
+.ans-block.highlighted{border-color:var(--hl-a-border);box-shadow:0 0 20px var(--hl-a-glow),0 0 0 1px #3fb95033}
+.ans-header{padding:9px 14px;background:#0d1117;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);font-size:.72rem;gap:8px;flex-wrap:wrap}
+.ans-label{color:#3fb950;font-weight:600}.ans-q{color:var(--subtext);font-size:.68rem}
+.ans-block.highlighted .ans-header{background:var(--hl-a)}
+pre{margin:0!important;border-radius:0!important;overflow-x:auto}
+pre code.hljs{padding:14px!important;font-size:.75rem!important;line-height:1.6!important;background:#0d1117!important;white-space:pre!important}
+.ans-block.highlighted pre code.hljs{background:#0a160a!important}
+.note{padding:10px 14px;font-size:.76rem;color:#d29922;background:#21262d44;border-top:1px solid var(--border);line-height:1.6}
+.note strong{color:#f0883e}
+.note code{background:#21262d;padding:1px 5px;border-radius:3px;font-size:.72rem;color:#79c0ff}
+
+/* QCM STYLES */
+.qcm-block{padding:12px 16px;border-top:1px solid var(--border)}
+.qcm-q{font-size:.8rem;color:var(--text);margin-bottom:8px;line-height:1.5}
+.qcm-options{display:flex;flex-direction:column;gap:4px;margin-bottom:6px}
+.qcm-opt{font-size:.78rem;padding:5px 10px;border-radius:5px;background:#21262d;color:var(--subtext)}
+.qcm-opt.correct{background:#1a2f1a;color:#3fb950;border:1px solid #3fb95055;font-weight:600}
+.qcm-sep{border:none;border-top:1px solid var(--border);margin:10px 0}
+
+/* MOBILE ACCORDION */
+.mob-q-item{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.mob-q-item.open{border-color:var(--hl-a-border);box-shadow:0 0 16px var(--hl-a-glow)}
+.mob-q-btn{width:100%;background:none;border:none;color:var(--text);cursor:pointer;padding:12px 14px;text-align:left;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.mob-q-item.open .mob-q-btn{background:var(--hl-q)}
+.mob-q-left{flex:1}
+.mob-q-num{font-size:.68rem;font-weight:700;color:var(--accent);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.mob-q-text{font-size:.79rem;line-height:1.5;color:var(--text);text-align:left}
+.mob-q-text ul{margin:4px 0 0 14px}.mob-q-text li{margin-bottom:2px}
+.mob-q-text code{background:#21262d;padding:1px 4px;border-radius:3px;font-size:.72rem;color:#79c0ff}
+.mob-chevron{color:var(--subtext);font-size:1rem;transition:transform .3s;flex-shrink:0;margin-top:2px}
+.mob-q-item.open .mob-chevron{transform:rotate(180deg);color:var(--hl-a-border)}
+.mob-answer{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.mob-q-item.open .mob-answer{max-height:9999px}
+
+.scroll-hint{position:fixed;bottom:18px;right:16px;background:#21262d;border:1px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.72rem;color:var(--subtext);opacity:0;transition:.3s;pointer-events:none;z-index:100}
+.scroll-hint.show{opacity:1}
+
+@media(max-width:768px){
+  .desktop-main{display:none}
+  .mobile-main{display:flex}
+  body{overflow-y:auto;height:auto}
+  pre code.hljs{font-size:.7rem!important;padding:12px!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Révision PHP — Logger &amp; Gestion des Formations (OFPPT)</h1>
+  <div class="badges">
+    <span class="badge th">Théorique · 15pts</span>
+    <span class="badge pr">Pratique · 25pts</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('th',this)">🧠 Partie Théorique</div>
+  <div class="tab" onclick="switchTab('pr',this)">💻 Partie Pratique</div>
+</div>
+
+<!-- ═══════ DESKTOP ═══════ -->
+<div class="desktop-main">
+  <div class="left-panel" id="left-panel">
+
+    <!-- THÉORIQUE -->
+    <div id="tab-th">
+      <div class="part-title">Partie théorique — <span>15 pts</span></div>
+
+      <div class="part-intro">
+        <strong>A. QCM</strong> — Répondez aux questions suivantes en choisissant la bonne réponse. <strong>(6 pts : Bonne réponse 1pt, mauvaise réponse 0pt)</strong>
+      </div>
+
+      <div class="q-item" onclick="goTo(0)">
+        <div class="q-num">A — QCM (6 questions) <span class="pts">6 pts</span></div>
+        <div class="q-text">
+          <strong>Q1.</strong> Parmi les fonctions suivantes, laquelle est utilisée pour supprimer des objets en PHP ?<br>
+          a. delete() &nbsp; b. unset() &nbsp; c. remove() &nbsp; d. empty()<br><br>
+          <strong>Q2.</strong> Quel est le résultat de ce code ?<br>
+          <code>$input1 = ""; $input1 = "Bonjour"; $input1 .= "DEVS"; echo "$input1";</code><br>
+          a. Bonjour &nbsp; b. BonjourDEVS &nbsp; c. Bonjour DEVs &nbsp; d. $input1<br><br>
+          <strong>Q3.</strong> Comment peut-on supprimer le cookie 'login' ayant la valeur 'admin' ?<br>
+          a. delete_cookie('login') &nbsp; b. cookie_destroy(login) &nbsp; c. unsetcookie('login') &nbsp; d. setcookie('login', '', time()-3600)<br><br>
+          <strong>Q4.</strong> Quelle est la valeur de $resultat après <code>implode('-', $tableau['a'])</code> avec <code>$tableau['a'] = ['x','y','z']</code> ?<br>
+          a. 'xyz' &nbsp; b. 'x-y-z' &nbsp; c. ['x-y-z'] &nbsp; d. Erreur<br><br>
+          <strong>Q5.</strong> Quelle méthode magique est invoquée lorsqu'un objet est converti en chaîne de caractères ?<br>
+          a. __string() &nbsp; b. __str() &nbsp; c. __toString() &nbsp; d. __toString()<br><br>
+          <strong>Q6.</strong> Quelle est la manière correcte d'appeler la méthode statique <code>add</code> de la classe <code>MathUtil</code> ?<br>
+          a. MathUtil->add(3,5) &nbsp; b. $math = new MathUtil(); $math->add(3,5) &nbsp; c. MathUtil::add(3,5)
+        </div>
+      </div>
+
+      <div class="part-intro" style="margin-top:4px">
+        <strong>B. Classe Logger</strong> — Pour développer des applications web efficaces, il est crucial de journaliser les actions des utilisateurs. Nous créerons une classe <code>Logger</code> dédiée à l'enregistrement des messages de journalisation d'un site web.
+      </div>
+
+      <div class="q-item" onclick="goTo(1)">
+        <div class="q-num">B.1.a — Constructeur de Logger <span class="pts">2 pts</span></div>
+        <div class="q-text">Créez la classe <strong>Logger</strong> avec un constructeur qui prend en paramètre le nom du fichier de journalisation. Ce constructeur doit créer un flux de fichier pour la journalisation en utilisant le nom de fichier fourni, et il doit ajouter le texte <code>"M107_EFM"</code> au début du fichier.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(2)">
+        <div class="q-num">B.1.b — Méthode log() <span class="pts">2 pts</span></div>
+        <div class="q-text">Une méthode <strong>log($message)</strong> permet d'enregistrer un message dans le fichier de journalisation en incluant la date et l'heure actuelle sous le format : <code>[YYYY-MM-DD HH:MM] $message</code>.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(3)">
+        <div class="q-num">B.2.a — Instance de Logger <span class="pts">1 pt</span></div>
+        <div class="q-text">Créez une instance de la classe <strong>Logger</strong> en spécifiant un nom de fichier de journalisation (par exemple <code>M107_EFM.txt</code>).</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(4)">
+        <div class="q-num">B.2.b — Enregistrer 3 messages <span class="pts">2 pts</span></div>
+        <div class="q-text">Utilisez la méthode <strong>log()</strong> pour enregistrer trois messages.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(5)">
+        <div class="q-num">B.2.c — Lire et trier le fichier <span class="pts">2 pts</span></div>
+        <div class="q-text">Lisez le contenu du fichier de journalisation <code>M107_EFM.txt</code> et affichez-le dans un tableau (objet array) trié en <strong>ordre décroissant</strong> des dates et heures des messages enregistrés pour vérification.</div>
+      </div>
+    </div>
+
+    <!-- PRATIQUE -->
+    <div id="tab-pr" style="display:none">
+      <div class="part-title">Partie pratique — <span>25 pts</span></div>
+      <div class="part-intro">
+        L'OFPPT envisage une application web PHP pour simplifier la gestion des formations internes. Tables :
+        <ul>
+          <li><strong>ResponsableFormation</strong>(matricule, motPasse, nom, prenom)</li>
+          <li><strong>Formation</strong>(idFormation, titre, logo, dateDebut, DateFin, status, #matriculeResponsable)</li>
+        </ul>
+        Base de données : <code>gestionFormations</code> — serveur : <code>localhost</code> — port : <code>3306</code> — user : <code>root</code> — pwd : <code>''</code>
+      </div>
+
+      <div class="q-item" onclick="goTo(6)">
+        <div class="q-num">A — Connexion à la base de données <span class="pts">2 pts</span></div>
+        <div class="q-text">Écrivez un script PHP qui se connecte à la base de données <strong>« gestionFormations »</strong>. Assurez-vous que le script gère les erreurs de connexion.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(7)">
+        <div class="q-num">B — login.php <span class="pts">3 pts</span></div>
+        <div class="q-text">Écrivez un script PHP pour vérifier les données d'authentification. Redirigez l'utilisateur vers <code>login.php</code> avec un message d'erreur si le matricule ou le mot de passe est vide ou incorrect. Sinon, redirigez-le vers <code>monCompte.php</code> et créez une session avec la valeur du matricule. Les noms des champs d'entrée devraient être respectivement <code>matricule</code> et <code>motpasse</code>.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(8)">
+        <div class="q-num">C.1 — Protection de monCompte.php <span class="pts">1 pt</span></div>
+        <div class="q-text">Écrivez un script PHP qui gère l'accès à la page <strong>« monCompte.php »</strong>, représentant une page à accès limité, où aucun visiteur n'a le droit de voir son contenu s'il n'a pas été authentifié par la page <code>login.php</code>.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(9)">
+        <div class="q-num">C.2 — Affichage des formations <span class="pts">2+1+1 pts</span></div>
+        <div class="q-text">Écrivez un script PHP qui complètera le code HTML pour afficher :
+          <ul>
+            <li>a. Une liste de formations, triées par date de début dans un ordre décroissant. <strong>(2pts)</strong></li>
+            <li>b. La durée en jours calculée à partir de la date de début et de la date de fin. <strong>(1pt)</strong></li>
+            <li>c. Le statut : <strong>"En cours"</strong> si la valeur est 0, <strong>"Terminée"</strong> si la valeur est 1. <strong>(1pt)</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="q-item" onclick="goTo(10)">
+        <div class="q-num">D — NouvelleFormation.php / insertionAction.php <span class="pts">2+1+1+1+2+1 pts</span></div>
+        <div class="q-text">Écrivez un script PHP permettant de :
+          <ul>
+            <li>D1. Transférer le logo de formation vers le dossier <code>« images »</code>. <strong>(2pts)</strong></li>
+            <li>D2a. Vérifier que l'identifiant respecte le format : <code>F_2024_XXX</code> (XXX = 3 chiffres). Afficher <em>« Format invalide ! »</em> sinon. <strong>(1pt)</strong></li>
+            <li>D2b. Empêcher l'ajout si un enregistrement avec le même identifiant existe déjà → afficher <em>« Déjà existant »</em>. <strong>(1pt)</strong></li>
+            <li>D2c. Vérifier que la date de début n'est pas future et que la date de fin est supérieure à la date de début → <em>« Date invalide »</em>. <strong>(1pt)</strong></li>
+            <li>D2d. Insérer les données en associant la formation au responsable connecté (matricule). <strong>(2pts)</strong></li>
+            <li>D3. Rediriger le responsable vers son espace privé. <strong>(1pt)</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="q-item" onclick="goTo(11)">
+        <div class="q-num">E — Annuler une formation <span class="pts">3 pts</span></div>
+        <div class="q-text">Écrivez un script qui sera exécuté lorsque le responsable clique sur le lien <em>« Annuler »</em>. Ce script vérifie d'abord si la formation est déjà terminée. Si tel est le cas, afficher : <em>« Impossible d'annuler une formation déjà terminée ! »</em>. Sinon, la formation est supprimée de la base de données.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(12)">
+        <div class="q-num">F — Terminer une formation <span class="pts">3 pts</span></div>
+        <div class="q-text">Lorsqu'un responsable clique sur le lien <em>« Terminer »</em>, la valeur de la colonne <strong>status</strong> est modifiée de 0 à 1. Si la formation est déjà terminée, un message indique que cette action a déjà été effectuée. Il est impossible de marquer une formation comme terminée si elle l'est déjà.</div>
+      </div>
+
+      <div class="q-item" onclick="goTo(13)">
+        <div class="q-num">I — Déconnexion <span class="pts">1 pt</span></div>
+        <div class="q-text">Écrivez un script qui, lorsqu'un responsable clique sur le lien <em>« Se déconnecter »</em>, détruit la session en cours et redirige le responsable vers la page <code>login.php</code>.</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="divider"></div>
+  <div class="right-panel" id="right-panel">
+
+    <!-- QCM -->
+    <div class="ans-block" id="ans-0">
+      <div class="ans-header"><span class="ans-label">✦ A — QCM Corrigé</span><span class="ans-q">6 réponses</span></div>
+      <div id="qcm-content"></div>
+      <div class="note"><strong>💡 Méthode :</strong> Pour les méthodes statiques → toujours <code>Classe::methode()</code>. Pour supprimer une variable/objet → <code>unset()</code>. Pour supprimer un cookie → <code>setcookie</code> avec une date dans le passé.</div>
+    </div>
+
+    <div class="ans-block" id="ans-1"><div class="ans-header"><span class="ans-label">✦ B.1.a — Constructeur Logger</span><span class="ans-q">flux fichier + écriture initiale</span></div><pre><code class="language-php" id="code-1"></code></pre><div class="note"><strong>💡</strong> <code>fopen($fichier, 'a')</code> ouvre en mode <em>append</em> (ajout) — le fichier est créé s'il n'existe pas. <code>fwrite()</code> écrit dans le flux ouvert.</div></div>
+
+    <div class="ans-block" id="ans-2"><div class="ans-header"><span class="ans-label">✦ B.1.b — Méthode log()</span><span class="ans-q">date + message dans le fichier</span></div><pre><code class="language-php" id="code-2"></code></pre><div class="note"><strong>💡</strong> <code>date('Y-m-d H:i')</code> donne le format <code>YYYY-MM-DD HH:MM</code> demandé. <code>\n</code> = saut de ligne entre chaque log.</div></div>
+
+    <div class="ans-block" id="ans-3"><div class="ans-header"><span class="ans-label">✦ B.2.a — Instance de Logger</span><span class="ans-q">création de l'objet</span></div><pre><code class="language-php" id="code-3"></code></pre></div>
+
+    <div class="ans-block" id="ans-4"><div class="ans-header"><span class="ans-label">✦ B.2.b — 3 messages log()</span><span class="ans-q">utilisation de la méthode</span></div><pre><code class="language-php" id="code-4"></code></pre></div>
+
+    <div class="ans-block" id="ans-5"><div class="ans-header"><span class="ans-label">✦ B.2.c — Lecture + tri décroissant</span><span class="ans-q">file() + arsort()</span></div><pre><code class="language-php" id="code-5"></code></pre><div class="note"><strong>💡</strong> <code>file()</code> lit le fichier ligne par ligne dans un tableau. <code>arsort()</code> trie en ordre décroissant en préservant les clés. Les dates au format <code>[YYYY-MM-DD HH:MM]</code> se trient correctement par ordre alphabétique inversé.</div></div>
+
+    <div class="ans-block" id="ans-6"><div class="ans-header"><span class="ans-label">✦ A — connexion.php</span><span class="ans-q">PDO + gestion erreurs</span></div><pre><code class="language-php" id="code-6"></code></pre><div class="note"><strong>💡</strong> Le port <code>3306</code> est précisé dans la chaîne DSN. <code>ATTR_ERRMODE</code> active les exceptions PDO pour la gestion d'erreurs.</div></div>
+
+    <div class="ans-block" id="ans-7"><div class="ans-header"><span class="ans-label">✦ B — login.php</span><span class="ans-q">authentification + session + redirections</span></div><pre><code class="language-php" id="code-7"></code></pre><div class="note"><strong>💡</strong> <code>empty()</code> détecte les champs vides. La requête préparée protège contre les injections SQL. <code>$_SESSION['matricule']</code> stocke l'identifiant de l'utilisateur connecté.</div></div>
+
+    <div class="ans-block" id="ans-8"><div class="ans-header"><span class="ans-label">✦ C.1 — Protection monCompte.php</span><span class="ans-q">vérification session</span></div><pre><code class="language-php" id="code-8"></code></pre><div class="note"><strong>💡</strong> Ce bloc doit être placé tout en haut de <code>monCompte.php</code>, avant tout affichage HTML. <code>exit()</code> est obligatoire après <code>header()</code>.</div></div>
+
+    <div class="ans-block" id="ans-9"><div class="ans-header"><span class="ans-label">✦ C.2 — Affichage des formations</span><span class="ans-q">requête + durée + statut</span></div><pre><code class="language-php" id="code-9"></code></pre><div class="note"><strong>💡 DATEDIFF(dateFin, dateDebut)</strong> calcule automatiquement la différence en jours en SQL. Le tri décroissant = <code>ORDER BY dateDebut DESC</code>.</div></div>
+
+    <div class="ans-block" id="ans-10"><div class="ans-header"><span class="ans-label">✦ D — insertionAction.php</span><span class="ans-q">upload + validations + insertion</span></div><pre><code class="language-php" id="code-10"></code></pre><div class="note"><strong>💡 Regex :</strong> <code>/^F_\d{4}_\d{3}$/</code> — <code>^</code> début, <code>F_</code> littéral, <code>\d{4}</code> = 4 chiffres, <code>_</code>, <code>\d{3}</code> = 3 chiffres, <code>$</code> fin.</div></div>
+
+    <div class="ans-block" id="ans-11"><div class="ans-header"><span class="ans-label">✦ E — annuler.php</span><span class="ans-q">vérif statut + suppression</span></div><pre><code class="language-php" id="code-11"></code></pre><div class="note"><strong>💡</strong> On vérifie d'abord <code>status == 1</code> (terminée) avant de supprimer. Si la formation est terminée → message d'erreur, sinon → <code>DELETE</code> + redirection.</div></div>
+
+    <div class="ans-block" id="ans-12"><div class="ans-header"><span class="ans-label">✦ F — terminer.php</span><span class="ans-q">UPDATE status 0 → 1</span></div><pre><code class="language-php" id="code-12"></code></pre><div class="note"><strong>💡</strong> <code>UPDATE ... SET status = 1</code> marque la formation comme terminée. On vérifie d'abord que <code>status != 1</code> pour éviter une double action.</div></div>
+
+    <div class="ans-block" id="ans-13"><div class="ans-header"><span class="ans-label">✦ I — deconnexion.php</span><span class="ans-q">destruction session + redirection</span></div><pre><code class="language-php" id="code-13"></code></pre><div class="note"><strong>💡</strong> <code>session_unset()</code> vide les variables, <code>session_destroy()</code> supprime la session serveur. <code>exit()</code> stoppe l'exécution après la redirection.</div></div>
+
+  </div>
+</div>
+
+<!-- ═══════ MOBILE ═══════ -->
+<div class="mobile-main" id="mobile-main">
+  <div id="mob-tab-th"></div>
+  <div id="mob-tab-pr" style="display:none"></div>
+</div>
+
+<div class="scroll-hint" id="scrollHint">✓ Réponse affichée</div>
+
+<script>
+// ── QCM DATA ──
+const qcmData = [
+  { q:"Q1. Parmi les fonctions suivantes, laquelle est utilisée pour supprimer des objets en PHP ?",
+    opts:["a. delete()","b. unset()","c. remove()","d. empty()"], correct:1 },
+  { q:"Q2. Quel est le résultat de : $input1 = ''; $input1 = 'Bonjour'; $input1 .= 'DEVS'; echo \"$input1\";",
+    opts:["a. Bonjour","b. BonjourDEVS","c. Bonjour DEVs","d. $input1"], correct:1 },
+  { q:"Q3. Comment peut-on supprimer le cookie 'login' ayant la valeur 'admin' ?",
+    opts:["a. delete_cookie('login')","b. cookie_destroy(login)","c. unsetcookie('login')","d. setcookie('login', '', time()-3600)"], correct:3 },
+  { q:"Q4. Valeur de $resultat après implode('-', $tableau['a']) avec $tableau['a'] = ['x','y','z'] ?",
+    opts:["a. 'xyz'","b. 'x-y-z'","c. ['x-y-z']","d. Cela génère une erreur"], correct:1 },
+  { q:"Q5. Quelle méthode magique est invoquée lorsqu'un objet est converti en chaîne de caractères ?",
+    opts:["a. __string()","b. __str()","c. __toString()","d. __toString()"], correct:2 },
+  { q:"Q6. Quelle est la manière correcte d'appeler la méthode statique 'add' de la classe 'MathUtil' ?",
+    opts:["a. $result = MathUtil->add(3, 5)","b. $math = new MathUtil(); $result = $math->add(3, 5)","c. $result = MathUtil::add(3, 5)"], correct:2 }
+];
+
+// Build QCM block
+const qcmContainer = document.getElementById('qcm-content');
+qcmData.forEach((item, i) => {
+  if (i > 0) {
+    const sep = document.createElement('hr');
+    sep.className = 'qcm-sep';
+    qcmContainer.appendChild(sep);
+  }
+  const block = document.createElement('div');
+  block.className = 'qcm-block';
+  block.innerHTML = `<div class="qcm-q"><strong>${item.q}</strong></div>
+    <div class="qcm-options">${item.opts.map((o,j)=>
+      `<div class="qcm-opt${j===item.correct?' correct':''}">${o}${j===item.correct?' ✓':''}</div>`
+    ).join('')}</div>`;
+  qcmContainer.appendChild(block);
+});
+
+// ── CODES ──
+const codes = {
+1:
+`<?php
+class Logger {
+    private $fichier;
+
+    // Constructeur : prend le nom du fichier en paramètre
+    public function __construct($nomFichier) {
+        // Ouvre le fichier en mode 'a' (append = ajout sans écraser)
+        $this->fichier = fopen($nomFichier, 'a');
+
+        // Ajoute "M107_EFM" au début (première ligne du fichier)
+        fwrite($this->fichier, "M107_EFM\n");
+    }
+}
+?>`,
+2:
+`// Méthode log() — à ajouter dans la classe Logger
+public function log($message) {
+    // Format demandé : [YYYY-MM-DD HH:MM] message
+    $date = date('Y-m-d H:i');
+    fwrite($this->fichier, "[$date] $message\n");
+}`,
+3:
+`<?php
+// B.2.a — Créer une instance de Logger
+$logger = new Logger('M107_EFM.txt');
+?>`,
+4:
+`<?php
+// B.2.b — Enregistrer trois messages
+$logger->log("Connexion de l'utilisateur admin");
+$logger->log("Accès à la page d'accueil");
+$logger->log("Déconnexion de l'utilisateur");
+?>`,
+5:
+`<?php
+// B.2.c — Lire le fichier et trier en ordre décroissant
+
+// file() lit toutes les lignes dans un tableau
+$lignes = file('M107_EFM.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+// arsort() trie en ordre décroissant (les dates [YYYY-MM-DD HH:MM]
+// se trient correctement par ordre alphabétique inversé)
+arsort($lignes);
+
+// Affichage
+echo "<pre>";
+foreach ($lignes as $ligne) {
+    echo htmlspecialchars($ligne) . "\n";
+}
+echo "</pre>";
+?>`,
+6:
+`<?php
+// connexion.php
+$host     = 'localhost';
+$dbname   = 'gestionFormations';
+$port     = 3306;
+$user     = 'root';
+$password = '';
+
+try {
+    $cnx = new PDO(
+        "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8",
+        $user,
+        $password
+    );
+    $cnx->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+?>`,
+7:
+`<?php
+// login.php — traitement du formulaire d'authentification
+session_start();
+include 'connexion.php';
+
+// Si déjà connecté → rediriger directement
+if (isset($_SESSION['matricule'])) {
+    header("Location: monCompte.php");
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $matricule = $_POST['matricule'];
+    $motpasse  = $_POST['motpasse'];
+
+    // Vérifier que les champs ne sont pas vides
+    if (empty($matricule) || empty($motpasse)) {
+        header("Location: login.php?erreur=Champs vides !");
+        exit();
+    }
+
+    // Vérifier les identifiants en base de données
+    $stmt = $cnx->prepare(
+        "SELECT * FROM ResponsableFormation
+         WHERE matricule = ? AND motPasse = ?"
+    );
+    $stmt->execute([$matricule, $motpasse]);
+    $resp = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($resp) {
+        // Authentification réussie → créer la session
+        $_SESSION['matricule'] = $matricule;
+        header("Location: monCompte.php");
+        exit();
+    } else {
+        // Identifiants incorrects → retour au login avec erreur
+        header("Location: login.php?erreur=Matricule ou mot de passe incorrect !");
+        exit();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8"><title>Connexion</title></head>
+<body>
+  <h2>Connexion</h2>
+  <?php if (isset($_GET['erreur'])) echo "<p style='color:red'>".$_GET['erreur']."</p>"; ?>
+  <form method="post" action="login.php">
+    <label>Matricule :</label>
+    <input type="text" name="matricule" required><br>
+    <label>Mot de passe :</label>
+    <input type="password" name="motpasse" required><br>
+    <button type="submit">Se connecter</button>
+  </form>
+</body>
+</html>`,
+8:
+`<?php
+// En haut de monCompte.php — protection page
+session_start();
+
+// Si l'utilisateur n'est pas connecté → rediriger vers login
+if (!isset($_SESSION['matricule'])) {
+    header("Location: login.php");
+    exit();
+}
+// Suite du code de monCompte.php...
+?>`,
+9:
+`<?php
+// Dans monCompte.php — affichage des formations
+include 'connexion.php';
+
+// a. Liste triée par dateDebut décroissant
+// b. Durée calculée en jours avec DATEDIFF
+// c. Statut géré en PHP (0 = En cours, 1 = Terminée)
+$stmt = $cnx->prepare(
+    "SELECT f.*,
+            r.nom,
+            r.prenom,
+            DATEDIFF(f.dateFin, f.dateDebut) AS duree
+     FROM Formation f
+     JOIN ResponsableFormation r
+          ON f.matriculeResponsable = r.matricule
+     ORDER BY f.dateDebut DESC"
+);
+$stmt->execute();
+$formations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($formations as $f):
+    // c. Statut : 0 = En cours, 1 = Terminée
+    $status = ($f['status'] == 0) ? 'En cours' : 'Terminée';
+?>
+    <tr>
+      <td><?php echo $f['idFormation']; ?></td>
+      <td><?php echo htmlspecialchars($f['titre']); ?></td>
+      <td><img src="images/<?php echo $f['logo']; ?>" width="50" alt="logo"></td>
+      <td><?php echo $f['dateDebut']; ?></td>
+      <td><?php echo $f['dateFin']; ?></td>
+      <td><?php echo $f['duree']; ?> Jours</td>
+      <td><?php echo htmlspecialchars($f['nom'].' '.$f['prenom']); ?></td>
+      <td><?php echo $status; ?></td>
+      <td>
+        <a href="annuler.php?id=<?php echo $f['idFormation']; ?>">Annuler</a>
+        <a href="terminer.php?id=<?php echo $f['idFormation']; ?>">Terminer</a>
+      </td>
+    </tr>
+<?php endforeach; ?>`,
+10:
+`<?php
+// insertionAction.php
+session_start();
+include 'connexion.php';
+
+if (isset($_POST['btnAjouter'])) {
+
+    $idFormation = $_POST['idFormation'];
+    $titre       = $_POST['titre'];
+    $dateDebut   = $_POST['dateDebut'];
+    $dateFin     = $_POST['dateFin'];
+
+    // ── D1. Upload du logo vers le dossier 'images' ──
+    $logoNom  = $_FILES['logo']['name'];
+    $logoTmp  = $_FILES['logo']['tmp_name'];
+    $logoDest = 'images/' . $logoNom;
+
+    if (!move_uploaded_file($logoTmp, $logoDest)) {
+        die("Erreur lors du transfert du logo !");
+    }
+
+    // ── D2a. Vérifier le format de l'identifiant F_YYYY_XXX ──
+    if (!preg_match('/^F_\d{4}_\d{3}$/', $idFormation)) {
+        die("Format invalide !");
+    }
+
+    // ── D2b. Vérifier que l'identifiant n'existe pas déjà ──
+    $stmt = $cnx->prepare(
+        "SELECT idFormation FROM Formation WHERE idFormation = ?"
+    );
+    $stmt->execute([$idFormation]);
+    if ($stmt->fetch()) {
+        die("Déjà existant");
+    }
+
+    // ── D2c. Vérifier les dates ──
+    // dateDebut ne doit pas être future + dateFin >= dateDebut
+    $aujourdhui = date('Y-m-d');
+    if ($dateDebut > $aujourdhui || $dateFin < $dateDebut) {
+        die("Date invalide");
+    }
+
+    // ── D2d. Insérer en base avec le matricule du responsable connecté ──
+    $stmt = $cnx->prepare(
+        "INSERT INTO Formation
+             (idFormation, titre, logo, dateDebut, dateFin, matriculeResponsable)
+         VALUES (?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->execute([
+        $idFormation,
+        $titre,
+        $logoNom,
+        $dateDebut,
+        $dateFin,
+        $_SESSION['matricule']   // responsable actuellement connecté
+    ]);
+
+    // ── D3. Rediriger vers l'espace privé ──
+    header("Location: monCompte.php");
+    exit();
+}
+?>`,
+11:
+`<?php
+// annuler.php
+session_start();
+include 'connexion.php';
+
+$id = $_GET['id'];
+
+// Vérifier le statut de la formation
+$stmt = $cnx->prepare(
+    "SELECT status FROM Formation WHERE idFormation = ?"
+);
+$stmt->execute([$id]);
+$formation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($formation['status'] == 1) {
+    // Formation déjà terminée → impossible d'annuler
+    echo "Impossible d'annuler une formation déjà terminée !";
+} else {
+    // Supprimer la formation
+    $stmt = $cnx->prepare(
+        "DELETE FROM Formation WHERE idFormation = ?"
+    );
+    $stmt->execute([$id]);
+
+    header("Location: monCompte.php");
+    exit();
+}
+?>`,
+12:
+`<?php
+// terminer.php
+session_start();
+include 'connexion.php';
+
+$id = $_GET['id'];
+
+// Vérifier le statut actuel
+$stmt = $cnx->prepare(
+    "SELECT status FROM Formation WHERE idFormation = ?"
+);
+$stmt->execute([$id]);
+$formation = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($formation['status'] == 1) {
+    // Formation déjà terminée → afficher message
+    echo "Cette formation est déjà marquée comme terminée !";
+} else {
+    // Mettre à jour le statut : 0 → 1
+    $stmt = $cnx->prepare(
+        "UPDATE Formation SET status = 1 WHERE idFormation = ?"
+    );
+    $stmt->execute([$id]);
+
+    header("Location: monCompte.php");
+    exit();
+}
+?>`,
+13:
+`<?php
+// deconnexion.php
+session_start();
+
+session_unset();    // Vider toutes les variables de session
+session_destroy();  // Détruire la session côté serveur
+
+// Rediriger vers la page de connexion
+header("Location: login.php");
+exit();
+?>`
+};
+
+// Inject desktop codes
+Object.entries(codes).forEach(([i, code]) => {
+  const el = document.getElementById('code-' + i);
+  if (el) { el.textContent = code; hljs.highlightElement(el); }
+});
+
+// ── QUESTIONS DATA for mobile ──
+const questions = [
+  { tab:'th', q:"A — QCM (6 questions)", pts:"6 pts",
+    text:`<strong>Q1.</strong> Parmi les fonctions suivantes, laquelle est utilisée pour supprimer des objets en PHP ?<br>a. delete() &nbsp; b. unset() &nbsp; c. remove() &nbsp; d. empty()<br><br>
+<strong>Q2.</strong> Quel est le résultat de : <code>$input1 = ""; $input1 = "Bonjour"; $input1 .= "DEVS"; echo "$input1";</code><br>a. Bonjour &nbsp; b. BonjourDEVS &nbsp; c. Bonjour DEVs &nbsp; d. $input1<br><br>
+<strong>Q3.</strong> Comment peut-on supprimer le cookie 'login' ?<br>a. delete_cookie('login') &nbsp; b. cookie_destroy(login) &nbsp; c. unsetcookie('login') &nbsp; d. setcookie('login', '', time()-3600)<br><br>
+<strong>Q4.</strong> Valeur de $resultat après <code>implode('-', $tableau['a'])</code> avec <code>['x','y','z']</code> ?<br>a. 'xyz' &nbsp; b. 'x-y-z' &nbsp; c. ['x-y-z'] &nbsp; d. Erreur<br><br>
+<strong>Q5.</strong> Quelle méthode magique est invoquée lorsqu'un objet est converti en chaîne ?<br>a. __string() &nbsp; b. __str() &nbsp; c. __toString()<br><br>
+<strong>Q6.</strong> Quelle est la manière correcte d'appeler la méthode statique 'add' de MathUtil ?<br>a. MathUtil->add(3,5) &nbsp; b. new MathUtil()->add(3,5) &nbsp; c. MathUtil::add(3,5)`,
+    note:"<strong>💡</strong> Méthodes statiques → <code>Classe::methode()</code>. Supprimer objet → <code>unset()</code>. Supprimer cookie → <code>setcookie</code> avec date passée.", isQcm:true },
+  { tab:'th', q:"B.1.a — Constructeur Logger", pts:"2 pts",
+    text:"Créez la classe <strong>Logger</strong> avec un constructeur qui prend en paramètre le nom du fichier de journalisation. Ce constructeur doit créer un flux de fichier pour la journalisation et ajouter le texte <code>\"M107_EFM\"</code> au début du fichier.",
+    note:"<strong>💡</strong> <code>fopen($fichier, 'a')</code> ouvre en mode <em>append</em>. <code>fwrite()</code> écrit dans le flux.", codeIdx:1 },
+  { tab:'th', q:"B.1.b — Méthode log()", pts:"2 pts",
+    text:"Une méthode <strong>log($message)</strong> permet d'enregistrer un message dans le fichier de journalisation en incluant la date et l'heure actuelle sous le format : <code>[YYYY-MM-DD HH:MM] $message</code>.",
+    note:"<strong>💡</strong> <code>date('Y-m-d H:i')</code> donne le format demandé.", codeIdx:2 },
+  { tab:'th', q:"B.2.a — Instance de Logger", pts:"1 pt",
+    text:"Créez une instance de la classe <strong>Logger</strong> en spécifiant un nom de fichier de journalisation (par exemple <code>M107_EFM.txt</code>).",
+    note:null, codeIdx:3 },
+  { tab:'th', q:"B.2.b — Enregistrer 3 messages", pts:"2 pts",
+    text:"Utilisez la méthode <strong>log()</strong> pour enregistrer trois messages.",
+    note:null, codeIdx:4 },
+  { tab:'th', q:"B.2.c — Lire et trier le fichier", pts:"2 pts",
+    text:"Lisez le contenu du fichier <code>M107_EFM.txt</code> et affichez-le dans un tableau trié en <strong>ordre décroissant</strong> des dates et heures.",
+    note:"<strong>💡</strong> <code>file()</code> lit ligne par ligne. <code>arsort()</code> trie en ordre décroissant.", codeIdx:5 },
+  { tab:'pr', q:"A — Connexion à la base de données", pts:"2 pts",
+    text:"Écrivez un script PHP qui se connecte à la base de données <strong>« gestionFormations »</strong>. Assurez-vous que le script gère les erreurs de connexion.",
+    note:"<strong>💡</strong> Port <code>3306</code> à préciser dans la chaîne DSN.", codeIdx:6 },
+  { tab:'pr', q:"B — login.php", pts:"3 pts",
+    text:"Écrivez un script PHP pour vérifier les données d'authentification. Redirigez vers <code>login.php</code> avec erreur si le matricule ou mot de passe est vide ou incorrect. Sinon, redirigez vers <code>monCompte.php</code> et créez une session avec le matricule.",
+    note:"<strong>💡</strong> <code>empty()</code> détecte les champs vides. Requête préparée contre les injections SQL.", codeIdx:7 },
+  { tab:'pr', q:"C.1 — Protection de monCompte.php", pts:"1 pt",
+    text:"Écrivez un script PHP qui gère l'accès à la page <strong>« monCompte.php »</strong> à accès limité : aucun visiteur non authentifié ne peut voir son contenu.",
+    note:"<strong>💡</strong> Ce bloc doit être en haut de la page, avant tout HTML. <code>exit()</code> obligatoire après <code>header()</code>.", codeIdx:8 },
+  { tab:'pr', q:"C.2 — Affichage des formations", pts:"2+1+1 pts",
+    text:`Écrivez un script PHP pour afficher :<ul><li>a. Liste de formations triées par date de début décroissant. <strong>(2pts)</strong></li><li>b. Durée en jours calculée à partir de dateDebut et dateFin. <strong>(1pt)</strong></li><li>c. Statut : <strong>"En cours"</strong> si status=0, <strong>"Terminée"</strong> si status=1. <strong>(1pt)</strong></li></ul>`,
+    note:"<strong>💡</strong> <code>DATEDIFF(dateFin, dateDebut)</code> calcule la différence en jours. <code>ORDER BY dateDebut DESC</code> pour le tri.", codeIdx:9 },
+  { tab:'pr', q:"D — insertionAction.php", pts:"2+1+1+1+2+1 pts",
+    text:`Écrivez un script PHP permettant de :<ul><li>D1. Transférer le logo vers le dossier <code>images/</code>. <strong>(2pts)</strong></li><li>D2a. Vérifier le format <code>F_YYYY_XXX</code> → "Format invalide !". <strong>(1pt)</strong></li><li>D2b. Empêcher doublon → "Déjà existant". <strong>(1pt)</strong></li><li>D2c. Vérifier dates → "Date invalide". <strong>(1pt)</strong></li><li>D2d. Insérer avec le matricule du responsable connecté. <strong>(2pts)</strong></li><li>D3. Rediriger vers monCompte.php. <strong>(1pt)</strong></li></ul>`,
+    note:"<strong>💡 Regex :</strong> <code>/^F_\\d{4}_\\d{3}$/</code> — 4 chiffres année + 3 chiffres numéro.", codeIdx:10 },
+  { tab:'pr', q:"E — annuler.php", pts:"3 pts",
+    text:"Écrivez un script exécuté lorsque le responsable clique sur <em>« Annuler »</em>. Si la formation est déjà terminée → <em>« Impossible d'annuler une formation déjà terminée ! »</em>. Sinon, supprimer la formation de la base de données.",
+    note:"<strong>💡</strong> Vérifier <code>status == 1</code> avant de faire le <code>DELETE</code>.", codeIdx:11 },
+  { tab:'pr', q:"F — terminer.php", pts:"3 pts",
+    text:"Lorsque le responsable clique sur <em>« Terminer »</em>, modifier la valeur de <strong>status</strong> de 0 à 1. Si la formation est déjà terminée, afficher un message. Il est impossible de marquer une formation terminée si elle l'est déjà.",
+    note:"<strong>💡</strong> <code>UPDATE Formation SET status = 1 WHERE idFormation = ?</code>", codeIdx:12 },
+  { tab:'pr', q:"I — Déconnexion", pts:"1 pt",
+    text:"Écrivez un script qui, lorsque le responsable clique sur <em>« Se déconnecter »</em>, détruit la session en cours et redirige vers la page <code>login.php</code>.",
+    note:"<strong>💡</strong> <code>session_unset()</code> + <code>session_destroy()</code> + <code>header()</code> + <code>exit()</code>.", codeIdx:13 }
+];
+
+// Build mobile
+function buildMobile() {
+  ['th','pr'].forEach(tab => {
+    const container = document.getElementById('mob-tab-' + tab);
+    container.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'part-title';
+    title.innerHTML = tab === 'th'
+      ? 'Partie Théorique — <span>15 pts</span>'
+      : 'Partie Pratique — <span>25 pts</span>';
+    container.appendChild(title);
+
+    const intro = document.createElement('div');
+    intro.className = 'part-intro';
+    intro.innerHTML = tab === 'th'
+      ? `<strong>A.</strong> QCM — Bonne réponse 1pt, mauvaise réponse 0pt. <strong>(6pts)</strong><br><br>
+         <strong>B.</strong> Classe <code>Logger</code> dédiée à l'enregistrement des messages de journalisation d'un site web.`
+      : `Application web PHP OFPPT — gestion des formations.<br><br>
+         <strong>Tables :</strong> ResponsableFormation(matricule, motPasse, nom, prenom) &amp; Formation(idFormation, titre, logo, dateDebut, dateFin, status, #matriculeResponsable)<br>
+         <strong>BD :</strong> gestionFormations — localhost:3306 — root / ''`;
+    container.appendChild(intro);
+
+    const qs = questions.filter(q => q.tab === tab);
+    qs.forEach((d, localI) => {
+      const globalI = questions.indexOf(d);
+      const wrap = document.createElement('div');
+      wrap.className = 'mob-q-item';
+      wrap.id = 'mob-item-' + globalI;
+      const noteHtml = d.note ? `<div class="note">${d.note}</div>` : '';
+
+      wrap.innerHTML = `
+        <button class="mob-q-btn" onclick="toggleMob(${globalI})">
+          <div class="mob-q-left">
+            <div class="mob-q-num">${d.q} <span class="pts">${d.pts}</span></div>
+            <div class="mob-q-text">${d.text}</div>
+          </div>
+          <span class="mob-chevron">▼</span>
+        </button>
+        <div class="mob-answer">
+          <div class="ans-header" style="border-top:1px solid var(--border)">
+            <span class="ans-label">✦ Réponse — ${d.q}</span>
+          </div>
+          ${d.isQcm ? `<div id="mob-qcm-${globalI}"></div>` : `<pre><code class="language-php" id="mob-code-${globalI}"></code></pre>`}
+          ${noteHtml}
+        </div>`;
+      container.appendChild(wrap);
+
+      setTimeout(() => {
+        if (d.isQcm) {
+          const qcmEl = document.getElementById('mob-qcm-' + globalI);
+          if (qcmEl) {
+            qcmData.forEach((item, i) => {
+              if (i > 0) { const s = document.createElement('hr'); s.className='qcm-sep'; qcmEl.appendChild(s); }
+              const b = document.createElement('div'); b.className='qcm-block';
+              b.innerHTML = `<div class="qcm-q"><strong>${item.q}</strong></div>
+                <div class="qcm-options">${item.opts.map((o,j)=>`<div class="qcm-opt${j===item.correct?' correct':''}">${o}${j===item.correct?' ✓':''}</div>`).join('')}</div>`;
+              qcmEl.appendChild(b);
+            });
+          }
+        } else if (d.codeIdx) {
+          const el = document.getElementById('mob-code-' + globalI);
+          if (el && codes[d.codeIdx]) { el.textContent = codes[d.codeIdx]; hljs.highlightElement(el); }
+        }
+      }, 0);
+    });
+  });
+}
+
+buildMobile();
+
+function toggleMob(idx) {
+  const item = document.getElementById('mob-item-' + idx);
+  const isOpen = item.classList.contains('open');
+  item.classList.toggle('open', !isOpen);
+  if (!isOpen) setTimeout(() => item.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+}
+
+let activeTab = 'th';
+
+function switchTab(tab, el) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-th').style.display = tab === 'th' ? '' : 'none';
+  document.getElementById('tab-pr').style.display = tab === 'pr' ? '' : 'none';
+  document.querySelectorAll('.q-item').forEach(q => q.classList.remove('active'));
+  document.querySelectorAll('.ans-block').forEach(a => a.classList.remove('highlighted'));
+  document.getElementById('mob-tab-th').style.display = tab === 'th' ? '' : 'none';
+  document.getElementById('mob-tab-pr').style.display = tab === 'pr' ? '' : 'none';
+  document.querySelectorAll('.mob-q-item').forEach(m => m.classList.remove('open'));
+}
+
+function goTo(idx) {
+  document.querySelectorAll('.q-item').forEach(q => q.classList.remove('active'));
+  const tabQs = Array.from(document.getElementById('tab-' + activeTab).querySelectorAll('.q-item'));
+  // find which q-item was clicked by matching onclick
+  const allQItems = document.querySelectorAll('#tab-' + activeTab + ' .q-item');
+  // Map idx to local position based on tab
+  const thIdxs = [0,1,2,3,4,5];
+  const prIdxs = [6,7,8,9,10,11,12,13];
+  const localList = activeTab === 'th' ? thIdxs : prIdxs;
+  const localPos = localList.indexOf(idx);
+  if (allQItems[localPos]) allQItems[localPos].classList.add('active');
+
+  document.querySelectorAll('.ans-block').forEach(a => a.classList.remove('highlighted'));
+  const ans = document.getElementById('ans-' + idx);
+  if (ans) {
+    ans.classList.add('highlighted');
+    const rp = document.getElementById('right-panel');
+    const rpRect  = rp.getBoundingClientRect();
+    const ansRect = ans.getBoundingClientRect();
+    rp.scrollBy({ top: ansRect.top - rpRect.top - 20, behavior: 'smooth' });
+    const hint = document.getElementById('scrollHint');
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 1500);
+  }
+}
+</script>
+</body>
+</html>
