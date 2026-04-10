@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Questionnaire Photographe</title>
+
+<style>
+body {
+  font-family: Arial;
+  max-width: 850px;
+  margin: auto;
+  padding: 20px;
+  background: #f6f6f6;
+}
+
+h1 {
+  text-align: center;
+}
+
+.section {
+  background: white;
+  padding: 20px;
+  margin-top: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.section-desc {
+  font-size: 13px;
+  color: gray;
+  margin-bottom: 20px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  background: black;
+  color: white;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📸 Questionnaire Site Photographe</h1>
+
+<form id="form">
+
+<!-- SECTION 1 -->
+<div class="section">
+  <div class="section-title">1. Informations générales</div>
+  <div class="section-desc">Tes informations de base</div>
+
+  <label>Nom complet</label>
+  <input name="Nom complet" required>
+
+  <label>Nom de ton activité</label>
+  <input name="Nom activité" required>
+
+  <label>Localisation</label>
+  <input name="Localisation" required>
+
+  <label>Email</label>
+  <input name="Email" required>
+
+  <label>Téléphone</label>
+  <input name="Téléphone">
+</div>
+
+<!-- SECTION 2 -->
+<div class="section">
+  <div class="section-title">2. Ton activité</div>
+  <div class="section-desc">Comprendre ton métier</div>
+
+  <label>Type de photographie</label>
+  <select name="Type photographie">
+    <option>Mariage</option>
+    <option>Portrait</option>
+    <option>Événementiel</option>
+    <option>Corporate</option>
+    <option>Produit</option>
+    <option>Artistique</option>
+  </select>
+
+  <label>Expérience</label>
+  <select name="Expérience">
+    <option>Débutant</option>
+    <option>Intermédiaire</option>
+    <option>Confirmé</option>
+    <option>Expert</option>
+  </select>
+
+  <label>Clients cibles</label>
+  <textarea name="Clients cibles"></textarea>
+
+  <label>Zone géographique</label>
+  <input name="Zone">
+</div>
+
+<!-- SECTION 3 -->
+<div class="section">
+  <div class="section-title">3. Objectif du site</div>
+  <div class="section-desc">Ce que tu veux obtenir</div>
+
+  <label>Objectif principal</label>
+  <select name="Objectif">
+    <option>Attirer des clients</option>
+    <option>Portfolio</option>
+    <option>Vendre services</option>
+    <option>Image de marque</option>
+  </select>
+
+  <label>Action principale attendue</label>
+  <select name="Action">
+    <option>Contact</option>
+    <option>Réservation</option>
+    <option>Devis</option>
+    <option>Voir portfolio</option>
+  </select>
+</div>
+
+<!-- SECTION 4 -->
+<div class="section">
+  <div class="section-title">4. Style & Design</div>
+  <div class="section-desc">Direction artistique du site</div>
+
+  <label>Style souhaité</label>
+  <select name="Style">
+    <option>Minimaliste</option>
+    <option>Luxe</option>
+    <option>Artistique</option>
+    <option>Moderne</option>
+    <option>Cinématique</option>
+  </select>
+
+  <label>Sites que tu aimes</label>
+  <textarea name="Inspiration"></textarea>
+
+  <label>Sites que tu n’aimes pas</label>
+  <textarea name="Anti-inspiration"></textarea>
+</div>
+
+<!-- SECTION 5 -->
+<div class="section">
+  <div class="section-title">5. Contenu</div>
+  <div class="section-desc">Tes ressources actuelles</div>
+
+  <label>Photos disponibles</label>
+  <select name="Photos">
+    <option>Oui</option>
+    <option>Partiellement</option>
+    <option>Non</option>
+  </select>
+
+  <label>Témoignages clients</label>
+  <select name="Témoignages">
+    <option>Oui</option>
+    <option>Non</option>
+  </select>
+
+  <label>Catégories photos</label>
+  <input name="Catégories">
+</div>
+
+<!-- SECTION 6 -->
+<div class="section">
+  <div class="section-title">6. Services</div>
+  <div class="section-desc">Tes offres</div>
+
+  <label>Type de services</label>
+  <select name="Services">
+    <option>Forfaits</option>
+    <option>Sur devis</option>
+    <option>Mixte</option>
+  </select>
+
+  <label>Affichage des prix</label>
+  <select name="Prix">
+    <option>Oui</option>
+    <option>Non</option>
+    <option>Partiel</option>
+  </select>
+
+  <label>Description services</label>
+  <textarea name="Description"></textarea>
+</div>
+
+<!-- SECTION 7 -->
+<div class="section">
+  <div class="section-title">7. Contact</div>
+  <div class="section-desc">Comment te contacter</div>
+
+  <label>Moyen principal</label>
+  <select name="Contact">
+    <option>Email</option>
+    <option>WhatsApp</option>
+    <option>Téléphone</option>
+    <option>Formulaire</option>
+  </select>
+
+  <label>Réseaux sociaux</label>
+  <textarea name="Social"></textarea>
+</div>
+
+<!-- SECTION 8 -->
+<div class="section">
+  <div class="section-title">8. Technique</div>
+  <div class="section-desc">Configuration du site</div>
+
+  <label>Nom de domaine</label>
+  <select name="Domaine">
+    <option>Oui</option>
+    <option>Non</option>
+  </select>
+
+  <label>Hébergement</label>
+  <select name="Hébergement">
+    <option>Oui</option>
+    <option>Non</option>
+    <option>Je ne sais pas</option>
+  </select>
+
+  <label>Maintenance du site</label>
+  <select name="Maintenance">
+    <option>Je veux tout déléguer</option>
+    <option>Je veux gérer moi-même</option>
+    <option>À définir</option>
+  </select>
+
+  <label>SEO (Google)</label>
+  <select name="SEO">
+    <option>Très important</option>
+    <option>Moyen</option>
+    <option>Pas important</option>
+  </select>
+
+  <label>Langues du site</label>
+  <select name="Langues">
+    <option>Français</option>
+    <option>Français + Anglais</option>
+    <option>Multilingue</option>
+  </select>
+</div>
+
+<!-- SECTION 9 -->
+<div class="section">
+  <div class="section-title">9. Vision</div>
+  <div class="section-desc">Positionnement et différenciation</div>
+
+  <label>Expérience utilisateur souhaitée</label>
+  <select name="Experience">
+    <option>Émotionnelle</option>
+    <option>Professionnelle</option>
+    <option>Artistique</option>
+  </select>
+
+  <label>Pourquoi te choisir ?</label>
+  <textarea name="Différenciation"></textarea>
+
+  <label>Autres informations</label>
+  <textarea name="Autres"></textarea>
+</div>
+
+<button type="submit">📥 Télécharger CSV</button>
+
+</form>
+
+<script>
+document.getElementById("form").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  let csv = "Question,Réponse\n";
+
+  formData.forEach((value, key) => {
+    csv += `"${key}","${value}"\n`;
+  });
+
+  const blob = new Blob([csv], {type:"text/csv"});
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "reponses_photographe.csv";
+  link.click();
+});
+</script>
+
+</body>
+</html>
